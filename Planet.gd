@@ -21,7 +21,7 @@ func atan2mine(x, y):
 func _ready():
 	add_to_group("planets")
 	if mass != 0:
-		parent = calculate_orbit(null, null)
+		parent = find_parent_planet()
 		var relative_position = transform.origin - parent.transform.origin
 		orbit_data = cart_to_kep(Vector3(relative_position.x, relative_position.y, 0),
 								 Vector3(velocity.x, velocity.y, 1))
@@ -36,7 +36,7 @@ func _process(delta):
 		#print(str(kep_to_cart(semi_major_axis, eccentricity, arg_of_pariapse, orbit_time)))
 		transform.origin = kep_to_cart(orbit_data) + parent.transform.origin
 
-func calculate_orbit(start, end):
+func find_parent_planet():
 	var planets = get_tree().get_nodes_in_group("planets")
 	var massive_planet = null
 	for p in planets:
