@@ -15,6 +15,7 @@ script = ExtResource( 1 )
 script = ExtResource( 2 )
 _sections_unfolded = [ "Transform" ]
 mass = 0
+velocity = Vector2( 0, -100 )
 
 [node name="Sprite" type="Sprite" parent="Sun" index="0"]
 
@@ -27,6 +28,7 @@ position = Vector2( 200, 1.6702 )
 script = ExtResource( 2 )
 _sections_unfolded = [ "Transform" ]
 mass = 1
+velocity = Vector2( 0, -130 )
 
 [node name="Sprite" type="Sprite" parent="Earth" index="0"]
 

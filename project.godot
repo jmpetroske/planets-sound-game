@@ -14,6 +14,10 @@ config/name="planets"
 run/main_scene="res://Planet.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+OrbitalMath="*res://OrbitalMath.gd"
+
 [rendering]
 
 environment/default_environment="res://default_env.tres"
