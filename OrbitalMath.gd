@@ -3,7 +3,7 @@ extends Node
 const mu = 10000000
 
 func _ready():
-	print(self.get_path())
+	pass
 
 func kep_to_cart(data, cur_time):
 	var a = data[0]
@@ -47,7 +47,6 @@ func kep_to_cart(data, cur_time):
 	var V_X = (X*h*e/(r*p))*sin(nu) - (h/r)*(cos(Om)*sin(w+nu) + sin(Om)*cos(w+nu)*cos(i))
 	var V_Y = (Y*h*e/(r*p))*sin(nu) - (h/r)*(sin(Om)*sin(w+nu) - cos(Om)*cos(w+nu)*cos(i))
 	var V_Z = (Z*h*e/(r*p))*sin(nu) - (h/r)*(cos(w+nu)*sin(i))
-	
 	return Vector2(X, Y)
 #   return [X,Y,Z],[V_X,V_Y,V_Z]
 
