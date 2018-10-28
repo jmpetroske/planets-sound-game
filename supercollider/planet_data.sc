@@ -1,0 +1,1 @@
+/home/petroske/.local/share/SuperCollider/Extensions/planet_data.sc

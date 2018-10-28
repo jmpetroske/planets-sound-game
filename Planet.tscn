@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://MouseController.gd" type="Script" id=1]
 [ext_resource path="res://Planet.gd" type="Script" id=2]
 [ext_resource path="res://icon.png" type="Texture" id=3]
+[ext_resource path="res://OSCManager.gd" type="Script" id=4]
 
 [node name="Node2D" type="Node2D" index="0"]
 
@@ -15,7 +16,7 @@ script = ExtResource( 1 )
 script = ExtResource( 2 )
 _sections_unfolded = [ "Transform" ]
 mass = 0
-velocity = Vector2( 0, -100 )
+velocity = Vector2( 0, 0 )
 
 [node name="Sprite" type="Sprite" parent="Sun" index="0"]
 
@@ -24,18 +25,41 @@ _sections_unfolded = [ "Material", "Transform" ]
 
 [node name="Earth" type="Node2D" parent="." index="2"]
 
-position = Vector2( 200, 1.6702 )
+position = Vector2( 291.86, 1.6702 )
 script = ExtResource( 2 )
 _sections_unfolded = [ "Transform" ]
 mass = 1
-velocity = Vector2( 0, -130 )
+velocity = Vector2( 0, -200 )
 
 [node name="Sprite" type="Sprite" parent="Earth" index="0"]
 
 texture = ExtResource( 3 )
 _sections_unfolded = [ "Material", "Transform" ]
 
-[node name="Camera2D" type="Camera2D" parent="." index="3"]
+[node name="Earth2" type="Node2D" parent="." index="3"]
+
+position = Vector2( 374.369, 5.01056 )
+script = ExtResource( 2 )
+_sections_unfolded = [ "Transform" ]
+mass = 2
+velocity = Vector2( 0, 100 )
+
+[node name="Sprite" type="Sprite" parent="Earth2" index="0"]
+
+texture = ExtResource( 3 )
+_sections_unfolded = [ "Material", "Transform" ]
+
+[node name="OSCsender" type="OSCsender" parent="Earth2" index="1"]
+
+ip = "127.0.0.1"
+port = 57123
+buffersize = 1024
+autostart = true
+autoclear = true
+script = ExtResource( 4 )
+_sections_unfolded = [ "Network" ]
+
+[node name="Camera2D" type="Camera2D" parent="." index="4"]
 
 position = Vector2( 6.10352e-05, -1.67017 )
 anchor_mode = 1

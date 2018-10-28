@@ -1,0 +1,5 @@
+GoDot controls creation of planets
+SCLang does synth defs
+SCLang receives OSC with GUID, current planet values
+SCLang maps planet values to synth arg values and updates
+Planet: has GUID

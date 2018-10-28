@@ -2,6 +2,13 @@ extends Node
 
 const mu = 10000000
 
+var current_id = 0
+
+func get_uid():
+	var retval = current_id
+	current_id = current_id + 1
+	return retval
+
 func _ready():
 	pass
 
@@ -47,7 +54,7 @@ func kep_to_cart(data, cur_time):
 	var V_X = (X*h*e/(r*p))*sin(nu) - (h/r)*(cos(Om)*sin(w+nu) + sin(Om)*cos(w+nu)*cos(i))
 	var V_Y = (Y*h*e/(r*p))*sin(nu) - (h/r)*(sin(Om)*sin(w+nu) - cos(Om)*cos(w+nu)*cos(i))
 	var V_Z = (Z*h*e/(r*p))*sin(nu) - (h/r)*(cos(w+nu)*sin(i))
-	return Vector2(X, Y)
+	return [Vector2(X, Y), Vector2(V_X, V_Y)]
 #   return [X,Y,Z],[V_X,V_Y,V_Z]
 
 func cart_to_kep(r_vec, v_vec, cur_time):
