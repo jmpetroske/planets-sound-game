@@ -57,7 +57,8 @@ buffersize = 1024
 autostart = true
 autoclear = true
 script = ExtResource( 4 )
-_sections_unfolded = [ "Network" ]
+_sections_unfolded = [ "Network", "Pause" ]
+synths = [ "FM1" ]
 
 [node name="Camera2D" type="Camera2D" parent="." index="4"]
 
@@ -84,5 +85,6 @@ drag_margin_bottom = 0.2
 editor_draw_screen = true
 editor_draw_limits = false
 editor_draw_drag_margin = false
+_sections_unfolded = [ "Drag Margin", "Limit", "Smoothing" ]
 
 

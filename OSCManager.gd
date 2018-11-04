@@ -1,5 +1,7 @@
 extends OSCsender
 
+export var synths = ["FM1"];
+
 func _ready():
 	pass
 
@@ -19,6 +21,13 @@ func send_osc_ready():
 	msg_add_real(get_parent().orbit_data[4])
 	msg_add_real(get_parent().orbit_data[5])
 	msg_add_real(get_parent().orbit_data[6])
+	msg_send()
+	
+	msg_address("/planet/addSynth")
+	msg_add_int(get_parent().uid)
+	msg_add_int(synths.size())
+	for synth in synths:
+		msg_add_string(synth)
 	msg_send()
 
 func send_osc_update(global_p, relative_p, v):
