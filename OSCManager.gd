@@ -1,6 +1,6 @@
 extends OSCsender
 
-export var synths = ["FM1"];
+export(Array) var synths;
 
 func _ready():
 	pass
@@ -39,4 +39,6 @@ func send_osc_update(global_p, relative_p, v):
 	msg_send()
 
 func send_osc_destory():
-	pass
+	msg_address("/planet/destroy")
+	msg_add_int(get_parent().uid)
+	msg_send()
