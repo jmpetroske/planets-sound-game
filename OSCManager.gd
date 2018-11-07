@@ -9,8 +9,6 @@ func _process(delta):
 	send_osc_update(get_parent().global_position, get_parent().get_relative_position(), get_parent().velocity)
 
 func send_osc_ready():
-	print(str(get_parent().uid))
-	print(str(get_parent().get_path()))
 	msg_address("/planet/init")
 	msg_add_int(get_parent().uid)
 	# [a, e, i, omega_AP, omega_LAN, T, EA]

@@ -29,6 +29,8 @@ func _ready():
 		for c in get_children():
 			if c is OSCManager:
 				c.send_osc_ready()
+				
+		print(str(uid) + ": " + str(get_path()) + ": " + str(OrbitalMath.orbit_period(orbit_data)))
 
 func _enter_tree():
 	pass

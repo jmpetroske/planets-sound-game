@@ -96,3 +96,14 @@ func cart_to_kep(r_vec, v_vec, cur_time):
 	var n = sqrt(mu/(pow(a,3)))
 	var T = cur_time - (1/n)*(EA - e*sin(EA))
 	return [a, e, i, omega_AP, omega_LAN, T, EA]
+	
+func orbit_period(data):
+	var a = data[0]
+	var e = data[1]
+	var i = data[2]
+	var omega_AP = data[3]
+	var omega_LAN = data[4]
+	var T = data[5]
+	#var EA = data[6]
+	
+	return 2 * PI * sqrt(pow(a, 3) / mu)
