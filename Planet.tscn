@@ -29,7 +29,7 @@ position = Vector2( 291.86, 1.6702 )
 script = ExtResource( 2 )
 _sections_unfolded = [ "Transform" ]
 mass = 1
-velocity = Vector2( 0, -160 )
+velocity = Vector2( 0, -159.951 )
 
 [node name="Sprite" type="Sprite" parent="Earth" index="0"]
 
@@ -38,7 +38,6 @@ _sections_unfolded = [ "Material", "Transform" ]
 
 [node name="Earth3" type="Node2D" parent="." index="3"]
 
-editor/display_folded = true
 position = Vector2( 487, -5.0105 )
 script = ExtResource( 2 )
 _sections_unfolded = [ "Transform" ]
@@ -61,7 +60,31 @@ script = ExtResource( 4 )
 _sections_unfolded = [ "Network" ]
 synths = [ "FM1" ]
 
-[node name="Earth2" type="Node2D" parent="." index="4"]
+[node name="Earth4" type="Node2D" parent="." index="4"]
+
+position = Vector2( -487, 5.0105 )
+script = ExtResource( 2 )
+_sections_unfolded = [ "Transform" ]
+mass = 1
+velocity = Vector2( 0, 155 )
+
+[node name="Sprite" type="Sprite" parent="Earth4" index="0"]
+
+texture = ExtResource( 3 )
+_sections_unfolded = [ "Material", "Transform" ]
+
+[node name="OSCsender" type="OSCsender" parent="Earth4" index="1"]
+
+ip = "127.0.0.1"
+port = 57123
+buffersize = 1024
+autostart = true
+autoclear = true
+script = ExtResource( 4 )
+_sections_unfolded = [ "Network" ]
+synths = [ "FM2" ]
+
+[node name="Earth2" type="Node2D" parent="." index="5"]
 
 position = Vector2( 374.369, 5.01056 )
 script = ExtResource( 2 )
@@ -83,9 +106,9 @@ autostart = true
 autoclear = true
 script = ExtResource( 4 )
 _sections_unfolded = [ "Network", "Pause" ]
-synths = [ "FM2" ]
+synths = [ "FM3" ]
 
-[node name="Camera2D" type="Camera2D" parent="." index="5"]
+[node name="Camera2D" type="Camera2D" parent="." index="6"]
 
 position = Vector2( 6.10352e-05, -1.67017 )
 anchor_mode = 1

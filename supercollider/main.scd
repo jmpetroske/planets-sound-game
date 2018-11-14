@@ -1,10 +1,6 @@
 // (0,0) is the top left of the screen
 // Most planet data in form global_position.x, global_position.y, relative_postiion.x, relative_position.y, velocity.x, velocity.y
 (
-
-)
-
-(
 ~main_routine = {
 	var planetInitOSCFunc;
 	var planetSynthOSCFunc;
