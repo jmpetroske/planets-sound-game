@@ -89,12 +89,15 @@ func cart_to_kep(r_vec, v_vec, cur_time):
 	var p = a*(1-pow(e,2))
 	var nu = atan2(sqrt(p/mu) * r_vec.dot(v_vec), p-r)
 	#10
-	var omega_AP = lat - nu
+#	var omega_AP = lat - nu
+	var e_vec = ((pow(v, 2) / mu) - (1/r)) * r_vec - ((r_vec.dot(v_vec)/mu) * v_vec)
+	var omega_AP = atan2(e_vec.y, e_vec.x)
 	#11
+	# var EA = 2*atan2(sqrt(1/(1+e)), sqrt(1-e) * tan(nu/2))
 	var EA = 2*atan(sqrt((1-e)/(1+e)) * tan(nu/2))
 	#12
 	var n = sqrt(mu/(pow(a,3)))
-	var T = cur_time - (1/n)*(EA - e*sin(EA))
+	var T = (1/n)*(EA - e*sin(EA))
 	return [a, e, i, omega_AP, omega_LAN, T, EA]
 	
 func orbit_period(data):
