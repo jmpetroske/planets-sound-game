@@ -23,7 +23,7 @@ func kep_to_cart(data, cur_time):
 	
 	#1
 	var n = sqrt(mu/(pow(a,3)))
-	var MA = n*(cur_time - T)
+	var MA = n*(cur_time + T)
 	#2
 	var EA = MA
 	var F = e * sin(EA)
@@ -37,6 +37,7 @@ func kep_to_cart(data, cur_time):
 	#var MA = EA - e*sin(EA)
 	#3
 	var nu = 2*atan(sqrt((1+e)/(1-e)) * tan(EA/2))
+	nu = 2 * atan2(sqrt(1-e) * cos(EA/2), sqrt(1+e) * sin(EA/2))
 	#4
 	var r = a*(1 - e*cos(EA))
 	#5
