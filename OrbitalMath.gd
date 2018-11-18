@@ -12,6 +12,9 @@ func get_uid():
 func _ready():
 	pass
 
+func float_equal(a, b, epsilon = 0.000001):
+	return abs(a - b) <= epsilon
+
 func kep_to_cart(data, cur_time):
 	var a = data[0]
 	var e = data[1]
@@ -25,16 +28,21 @@ func kep_to_cart(data, cur_time):
 	var n = sqrt(mu/(pow(a,3)))
 	var MA = n*(cur_time + T)
 	#2
-	var EA = MA
-	var F = e * sin(EA)
-	var j = 0
-	var maxIterations = 30
-	var delta = 0.00000001
-	while j < maxIterations && abs(F) < delta:
-		EA = EA - (F / (1 - e * cos(EA)))
-		F = EA - e * sin(EA) - MA
-		j = j + 1
+#	var EA = MA
+#	if e > 0.7:
+#		EA = PI
+#	var j = 0
+#	var maxIterations = 100
+#	var delta = 0.00000001
+#	while j < maxIterations: # && abs(F) < delta:
+#		EA = EA - ((EA - e * sin(EA) - MA) / (1 - e * cos(EA)))
+#		j = j + 1
 	#var MA = EA - e*sin(EA)
+	
+	var EA = MA
+	for x in range(100):
+		EA = MA + e * sin(EA)
+	
 	#3
 	var nu = 2*atan(sqrt((1+e)/(1-e)) * tan(EA/2))
 	nu = 2 * atan2(sqrt(1-e) * cos(EA/2), sqrt(1+e) * sin(EA/2))
@@ -73,26 +81,32 @@ func cart_to_kep(r_vec, v_vec, cur_time):
 	var e = sqrt(1 - (pow(h,2))/(a*mu))
 	#6
 	var i = acos(h_bar.z/h)
+	if float_equal(i, PI):
+		i = 0
 	#7
 	var omega_LAN
-	if i == 0 || i == PI:
+	if float_equal(i, 0):
 		omega_LAN = 0
 	else:
-		omega_LAN = atan2(h_bar.x, -h_bar.y)
+		omega_LAN = atan2(-h_bar.y, h_bar.x)
 	#8
 	#beware of division by zero here
 	var lat
-	if i == 0 || i == PI:
+	if float_equal(i, 0):
 		lat = 0
 	else:
 		lat = atan2(r_vec.z / (sin(i)), r_vec.x*cos(omega_LAN) + r_vec.y*sin(omega_LAN))
 	#9
 	var p = a*(1-pow(e,2))
-	var nu = atan2(sqrt(p/mu) * r_vec.dot(v_vec), p-r)
+	var nu = atan2(p-r, sqrt(p/mu) * r_vec.dot(v_vec))
 	#10
 #	var omega_AP = lat - nu
 	var e_vec = ((pow(v, 2) / mu) - (1/r)) * r_vec - ((r_vec.dot(v_vec)/mu) * v_vec)
+#	var e_vec = v_vec.cross(h_bar)/mu - r_vec/r
+	print(str(e_vec))
 	var omega_AP = atan2(e_vec.y, e_vec.x)
+	if r_vec.cross(v_vec).z < 0:
+		omega_AP = 2*PI - omega_AP
 	#11
 	# var EA = 2*atan2(sqrt(1/(1+e)), sqrt(1-e) * tan(nu/2))
 	var EA = 2*atan(sqrt((1-e)/(1+e)) * tan(nu/2))
