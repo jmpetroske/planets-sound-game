@@ -23,7 +23,23 @@
 	Out.ar(outbus, outsig * gain.dbamp);
 }).add;
 
-// ~instance = ~fm_synth.play;
+(
+~formant_synth = SynthDef('formant_synth', {
+	var noise = LFNoise2.ar(500);
+	// 280, 2620, 3390: i
+	// 600, 2060, 2840: e
+	var f1 = BPF.ar(noise, 280, 0.001);
+	var f2 = BPF.ar(noise, 2620, 0.001);
+	var f3 = BPF.ar(noise, 2840, 0.001);
+
+	// var f1 = BPF.ar(noise, 600, 0.001);
+	// var f2 = BPF.ar(noise, 2060, 0.002);
+	// var f3 = BPF.ar(noise, 2840, 0.002);	
+	Out.ar([0, 1], 100 * (f2 + (f3 * 0.7)));
+	// Out.ar([0, 1], BHiShelf.ar(0.3 * (SinOsc.ar(220) + Formant.ar(220, 2620, 440, 0.3) + Formant.ar(220, 3390, 440, 0.1)), 800, 0.1, -8));
+}).add;
+)
+
+// ~instance = ~formant_synth.play;
 // ~instance.set(\freq, 98, \cratio, 3, \mratio, 4, \modulationindex, 1.2, \amp, -20);
 // ~instance.free;
-// s.freeAll;	
