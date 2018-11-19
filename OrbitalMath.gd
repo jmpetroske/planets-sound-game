@@ -45,7 +45,7 @@ func kep_to_cart(data, cur_time):
 	
 	#3
 	var nu = 2*atan(sqrt((1+e)/(1-e)) * tan(EA/2))
-	nu = 2 * atan2(sqrt(1-e) * cos(EA/2), sqrt(1+e) * sin(EA/2))
+	nu = 2 * atan2(sqrt(1+e) * sin(EA/2), sqrt(1-e) * cos(EA/2))
 	#4
 	var r = a*(1 - e*cos(EA))
 	#5
@@ -81,24 +81,24 @@ func cart_to_kep(r_vec, v_vec, cur_time):
 	var e = sqrt(1 - (pow(h,2))/(a*mu))
 	#6
 	var i = acos(h_bar.z/h)
-	if float_equal(i, PI):
-		i = 0
+#	if float_equal(i, PI):
+#		i = 0
 	#7
 	var omega_LAN
-	if float_equal(i, 0):
+	if float_equal(i, 0) or float_equal(i, PI):
 		omega_LAN = 0
 	else:
-		omega_LAN = atan2(-h_bar.y, h_bar.x)
+		omega_LAN = atan2(h_bar.x, -h_bar.y)
 	#8
 	#beware of division by zero here
 	var lat
-	if float_equal(i, 0):
+	if float_equal(i, 0) or float_equal(i, PI):
 		lat = 0
 	else:
-		lat = atan2(r_vec.z / (sin(i)), r_vec.x*cos(omega_LAN) + r_vec.y*sin(omega_LAN))
+		lat = atan2(r_vec.x*cos(omega_LAN) + r_vec.y*sin(omega_LAN), r_vec.z / (sin(i)))
 	#9
 	var p = a*(1-pow(e,2))
-	var nu = atan2(p-r, sqrt(p/mu) * r_vec.dot(v_vec))
+	var nu = atan2(sqrt(p/mu) * r_vec.dot(v_vec), p-r)
 	#10
 #	var omega_AP = lat - nu
 	var e_vec = ((pow(v, 2) / mu) - (1/r)) * r_vec - ((r_vec.dot(v_vec)/mu) * v_vec)
