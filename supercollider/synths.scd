@@ -24,22 +24,50 @@
 }).add;
 
 (
-~formant_synth = SynthDef('formant_synth', {
-	var noise = LFNoise2.ar(500);
+~formant_synth = SynthDef('formant_synth', {//arg vowel = 0;
+	var vowel = MouseY.kr(0.0, 1.0, \linear);
+	var bw = MouseX.kr(0.0, 1.0, \linear);
+	var noise = BLowShelf.ar(LFNoise2.ar(2000) + LFNoise2.ar(1500), 1000, 0.7, -16);
 	// 280, 2620, 3390: i
 	// 600, 2060, 2840: e
-	var f1 = BPF.ar(noise, 280, 0.001);
-	var f2 = BPF.ar(noise, 2620, 0.001);
-	var f3 = BPF.ar(noise, 2840, 0.001);
+	var freq1, freq2, freq3;
+	var f1, f2, f3;
 
+	freq1 = LinLin.ar(vowel, 0, 1, 280, 600);
+	freq2 = LinLin.ar(vowel, 0, 1, 2620, 2060);
+	freq3 = LinLin.ar(vowel, 0, 1, 3390, 2840);
+	
+	// f1 = BPF.ar(noise, freq1, 0.002);
+	// f2 = BPF.ar(noise, freq2, 0.001);
+	// f3 = BPF.ar(noise, freq3, 0.001);
+	
+	f1 = BPF.ar(noise, freq1, bw * 0.8);
+	f2 = BPF.ar(noise, freq2, bw);
+	f3 = BPF.ar(noise, freq3, bw);
+
+	bw.poll;
+	noise.poll;
+	
 	// var f1 = BPF.ar(noise, 600, 0.001);
 	// var f2 = BPF.ar(noise, 2060, 0.002);
 	// var f3 = BPF.ar(noise, 2840, 0.002);	
-	Out.ar([0, 1], 100 * (f2 + (f3 * 0.7)));
+	Out.ar([0, 1], LPF.ar(10 * ((0.1 * f1) + (2 * f2) + (1 * f3)), 4000));
 	// Out.ar([0, 1], BHiShelf.ar(0.3 * (SinOsc.ar(220) + Formant.ar(220, 2620, 440, 0.3) + Formant.ar(220, 3390, 440, 0.1)), 800, 0.1, -8));
 }).add;
 )
 
-// ~instance = ~formant_synth.play;
 // ~instance.set(\freq, 98, \cratio, 3, \mratio, 4, \modulationindex, 1.2, \amp, -20);
-// ~instance.free;
+~instance = Synth("formant_synth", [\vowel, 0]);
+~instance.set(\vowel, 1.0);
+~instance.set(\vowel, 0.9);
+~instance.set(\vowel, 0.8);
+~instance.set(\vowel, 0.7);
+~instance.set(\vowel, 0.6);
+~instance.set(\vowel, 0.5);
+~instance.set(\vowel, 0.4);
+~instance.set(\vowel, 0.3);
+~instance.set(\vowel, 0.2);
+~instance.set(\vowel, 0.1);
+~instance.set(\vowel, 0.0);
+
+~instance.free;
