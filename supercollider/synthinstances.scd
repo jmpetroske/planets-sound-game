@@ -88,9 +88,58 @@
 	synth.free;
 });
 
+~additive1Routine = Routine.new({arg updateData;
+	// initialization here
+	var uid;
+	var synths = List.new();
+	
+	// [partialNum, partialAmp]
+	var partialData = [
+		[1, 1/2],
+		[2, 1/3],
+		[3, 1/4],
+		[4, 1/5],
+		[5, 1/6],
+		[6, 1/7],
+		[7, 1/8],
+	];
+
+	var freq = 137;
+	var richness = 0;
+	
+	uid = updateData;
+	
+	partialData.do({arg item, index;
+		var partialNum = item[0];
+		var partialAmp = item[1];
+		// outbus = 0, cFreq, mFreq, mIndexGain = 0, gain = -12
+		synths.put(partialNum -> Synth("simple_am_synth",
+			[
+				\outbus, 0,
+				\cFreq, partialNum * (137/2),
+				\mFreq, 137/2,
+				\mIndexGain, 0,
+				\gain, partialAmp.ampdb - 12
+			]));
+	});
+
+	updateData = "starting".yield;
+	while({updateData.isNil.not}, {
+
+		updateData = True.yield;
+	});
+
+	// cleanup here
+	"cleanup".postln;
+	
+	synths.keysValuesDo({arg key, value;
+		value.free;
+	});
+});
+
 // ~fm1_routine.next([1, 2]);
 // ~fm1_routine.next(Plane);
 
-// ~synthinstances.add(\FM1 -> ~fm1Routine);
-// ~synthinstances.add(\FM2 -> ~fm2Routine);
+~synthinstances.add(\FM1 -> ~fm1Routine);
+~synthinstances.add(\FM2 -> ~fm2Routine);
 ~synthinstances.add(\FM3 -> ~fm3Routine);

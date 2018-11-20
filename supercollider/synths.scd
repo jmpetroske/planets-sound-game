@@ -23,7 +23,6 @@
 	Out.ar(outbus, outsig * gain.dbamp);
 }).add;
 
-(
 ~formant_synth = SynthDef('formant_synth', {//arg vowel = 0;
 	var vowel = MouseY.kr(0.0, 1.0, \linear);
 	var bw = MouseX.kr(0.0, 1.0, \linear);
@@ -54,20 +53,37 @@
 	Out.ar([0, 1], LPF.ar(10 * ((0.1 * f1) + (2 * f2) + (1 * f3)), 4000));
 	// Out.ar([0, 1], BHiShelf.ar(0.3 * (SinOsc.ar(220) + Formant.ar(220, 2620, 440, 0.3) + Formant.ar(220, 3390, 440, 0.1)), 800, 0.1, -8));
 }).add;
-)
+
+~simpleAMSynth = SynthDef.new(\simple_am_synth, {
+	arg outbus = 0, cFreq, mFreq, mIndexGain = 0, gain = -12;
+
+	
+	var mIndex, amp, carrier, normFac;
+
+	mIndex = mIndexGain.dbamp;
+	amp = gain.dbamp;
+
+	normFac = (1 + (2*mIndex)).reciprocal;
+
+	carrier = SinOsc.ar(cFreq, 0, (2*SinOsc.ar(mFreq, 0, mIndex)) + 1);
+	carrier = amp * normFac * carrier;
+
+	Out.ar(0, carrier);
+});
+
 
 // ~instance.set(\freq, 98, \cratio, 3, \mratio, 4, \modulationindex, 1.2, \amp, -20);
-~instance = Synth("formant_synth", [\vowel, 0]);
-~instance.set(\vowel, 1.0);
-~instance.set(\vowel, 0.9);
-~instance.set(\vowel, 0.8);
-~instance.set(\vowel, 0.7);
-~instance.set(\vowel, 0.6);
-~instance.set(\vowel, 0.5);
-~instance.set(\vowel, 0.4);
-~instance.set(\vowel, 0.3);
-~instance.set(\vowel, 0.2);
-~instance.set(\vowel, 0.1);
-~instance.set(\vowel, 0.0);
+// ~instance = Synth("formant_synth", [\vowel, 0]);
+// ~instance.set(\vowel, 1.0);
+// ~instance.set(\vowel, 0.9);
+// ~instance.set(\vowel, 0.8);
+// ~instance.set(\vowel, 0.7);
+// ~instance.set(\vowel, 0.6);
+// ~instance.set(\vowel, 0.5);
+// ~instance.set(\vowel, 0.4);
+// ~instance.set(\vowel, 0.3);
+// ~instance.set(\vowel, 0.2);
+// ~instance.set(\vowel, 0.1);
+// ~instance.set(\vowel, 0.0);
 
-~instance.free;
+// ~instance.free;
