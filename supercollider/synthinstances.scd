@@ -91,55 +91,79 @@
 ~additive1Routine = Routine.new({arg updateData;
 	// initialization here
 	var uid;
-	var synths = List.new();
+	var synths = Dictionary.new();
 	
 	// [partialNum, partialAmp]
-	var partialData = [
-		[1, 1/2],
-		[2, 1/3],
-		[3, 1/4],
-		[4, 1/5],
-		[5, 1/6],
-		[6, 1/7],
-		[7, 1/8],
-	];
+	var partialData = Dictionary.newFrom(List[
+		1, 1/2,
+		2, 1/3,
+		3, 1/4,
+		4, 1/5,
+		5, 1/6,
+		6, 1/7,
+		7, 1/8,
+	]);
 
+	var extraGain = -12;
 	var freq = 137;
 	var richness = 0;
+	var dbPerPartial = 12;
 	
 	uid = updateData;
-	
-	partialData.do({arg item, index;
-		var partialNum = item[0];
-		var partialAmp = item[1];
+
+	partialData.keysValuesDo({arg key, value;
+		var partialNum = key;
+		var partialMaxAmp = value;
+		var partialGain;
+
+		partialGain = (partialMaxAmp.ampdb - ((partialNum - richness) * dbPerPartial)).min(partialMaxAmp.ampdb);
 		// outbus = 0, cFreq, mFreq, mIndexGain = 0, gain = -12
-		synths.put(partialNum -> Synth("simple_am_synth",
-			[
-				\outbus, 0,
-				\cFreq, partialNum * (137/2),
-				\mFreq, 137/2,
-				\mIndexGain, 0,
-				\gain, partialAmp.ampdb - 12
-			]));
+		synths.add(partialNum -> [
+			Synth("simple_am_synth",
+				[
+					\outbus, 0,
+					\cFreq, partialNum * (137/2),
+					\mFreq, 137/2,
+					\mIndexGain, -6,
+					\gain, partialGain + extraGain;
+				]),
+			// arg outbus = 0, freq = 440.0, formFreq = 1760.0, q = 1.0, gain = -12;
+			Synth("ags_noise_synth",
+				[
+					\outbus, 0,
+					\freq, 137/2, 
+					\formFreq, partialNum * (137/2),
+					\q, 25,
+					\gain, partialGain + extraGain - 9;
+				])
+		]);
 	});
 
 	updateData = "starting".yield;
 	while({updateData.isNil.not}, {
-
+		richness = updateData.globalPos.x.linlin(-400, 400, 7, 1.5);
+		
+		synths.keysValuesDo({arg partialNum, partialSynths;
+			var partialMaxAmp = partialData[partialNum];
+			var partialGain = (partialMaxAmp.ampdb - ((partialNum - richness) * dbPerPartial)).min(partialMaxAmp.ampdb);
+			partialSynths[0].set(\gain, partialGain + extraGain);
+			partialSynths[1].set(\gain, partialGain + extraGain - 6);
+		});
+		
 		updateData = True.yield;
 	});
 
 	// cleanup here
 	"cleanup".postln;
-	
 	synths.keysValuesDo({arg key, value;
-		value.free;
+		value[0].free;
+		value[1].free;
 	});
 });
 
 // ~fm1_routine.next([1, 2]);
 // ~fm1_routine.next(Plane);
 
-~synthinstances.add(\FM1 -> ~fm1Routine);
-~synthinstances.add(\FM2 -> ~fm2Routine);
-~synthinstances.add(\FM3 -> ~fm3Routine);
+~synthinstances.add(\FM1 -> ~additive1Routine);
+// ~synthinstances.add(\FM2 -> ~fm2Routine);
+// ~synthinstances.add(\FM3 -> ~fm3Routine);

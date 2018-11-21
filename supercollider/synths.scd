@@ -54,7 +54,7 @@
 	// Out.ar([0, 1], BHiShelf.ar(0.3 * (SinOsc.ar(220) + Formant.ar(220, 2620, 440, 0.3) + Formant.ar(220, 3390, 440, 0.1)), 800, 0.1, -8));
 }).add;
 
-~simpleAMSynth = SynthDef.new(\simple_am_synth, {
+~simpleAMSynth = SynthDef.new('simple_am_synth', {
 	arg outbus = 0, cFreq, mFreq, mIndexGain = 0, gain = -12;
 
 	
@@ -69,6 +69,26 @@
 	carrier = amp * normFac * carrier;
 
 	Out.ar(0, carrier);
+}).add;
+
+~agsNoiseSynth = CtkSynthDef.new('ags_noise_synth', {arg outbus = 0, freq = 440.0, formFreq = 1760.0, q = 1.0, gain = -12;
+    var bus = 0;
+    var trigger;
+    var granSig;
+    var out;
+    var amp;
+    var grainDur, grainFreq, envFreq, wavFreq;
+
+    amp = gain.dbamp;
+    grainFreq = freq;
+    envFreq = q.reciprocal * (formFreq/2);
+    wavFreq = formFreq;
+    grainDur = envFreq.reciprocal;
+
+    trigger = Dust.ar(grainFreq); // asynchronous trigger
+    granSig = GrainSin.ar(trigger: trigger, dur: grainDur, freq: wavFreq);
+
+    Out.ar(bus, granSig * amp)
 });
 
 
