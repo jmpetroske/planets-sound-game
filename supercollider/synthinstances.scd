@@ -1,36 +1,46 @@
-~synthinstances = Dictionary.new();
+~fm1RoutineFunc = {arg planetUID, gainSliderIndex;
+	{arg initData;
+		// initialization here
+		var synth, panner;
+		var panBus;
+		
+		var updateFunc;
 
-~fm1Routine = Routine.new({arg updateData;
-	// initialization here
-	var uid;
-	var synth, panner;
-	var panBus;
+		// updatable data
+		var sliderGain = -inf;
+		var mainPlanet = PlanetPosition.zero.value;
 
-	uid = updateData;
+		panBus = Bus.audio(s, 1);
+		
+		// arg inbus, outbus = 0, pos = 0;
+		panner = Synth("panner", [\inbus, panBus, \pos, 0]);
+		// arg outbus = 0, freq = 220, cratio = 1, mratio = 1, modulationindex = 1, gain = -12
+		synth = Synth("fm_synth", [\outbus, panBus, \freq, 137, \cratio, 2, \mratio, 3, \gain, -inf]);
 
-	panBus = Bus.audio(s, 1);
-	
-	// arg inbus, outbus = 0, pos = 0;
-	panner = Synth("panner", [\inbus, panBus, \pos, 0]);
-	// arg outbus = 0, freq = 220, cratio = 1, mratio = 1, modulationindex = 1, gain = -12
-	synth = Synth("fm_synth", [\outbus, panBus, \freq, 137, \cratio, 2, \mratio, 3, \gain, -20]);
+		updateFunc = {
+			synth.set(\modulationindex, mainPlanet.globalPos.y.linlin(-300, 1, 5, 0));
+			synth.set(\gain, sliderGain + mainPlanet.globalPos.y.linlin(-250, 100, -24, -50, \min));
+			panner.set(\pos, mainPlanet.globalPos.x.linlin(-400, 400, -0.8, 0.8));
+		};
 
-	updateData = "starting".yield;
-	while({updateData.isNil.not}, {
-		// update here
-		// updateData.postln;
-		synth.set(\modulationindex, updateData.globalPos.y.linlin(-300, 1, 5, 0));
-		// updateData.globalPos.y.linlin(50, -150, -60, -24).postln;
-		synth.set(\gain, updateData.globalPos.y.linlin(-250, 100, -24, -50, \min));
-		panner.set(\pos, updateData.globalPos.x.linlin(-400, 400, -0.8, 0.8));
-		updateData = True.yield;
-	});
+		updateFunc.value;
 
-	// cleanup here
-	"cleanup".postln;
-	panBus.free;
-	synth.free;
-});
+		initData = "Started synth controller".yield;
+		"started synth controller".postln;
+		while({initData.isNil.not}, {
+			sliderGain = ~midiToGain.value(~sliderData[gainSliderIndex] ? 0);
+			mainPlanet = ~planetData[planetUID] ? PlanetPosition.zero.value;
+
+			updateFunc.value();
+			initData = "Updated synth controller".yield;
+		});
+
+		// cleanup here
+		"Stopping synth controller".postln;
+		panBus.free;
+		synth.free;
+	};
+};
 
 ~fm2Routine = Routine.new({arg updateData;
 	// initialization here
@@ -160,10 +170,3 @@
 		value[1].free;
 	});
 });
-
-// ~fm1_routine.next([1, 2]);
-// ~fm1_routine.next(Plane);
-
-~synthinstances.add(\FM1 -> ~additive1Routine);
-// ~synthinstances.add(\FM2 -> ~fm2Routine);
-// ~synthinstances.add(\FM3 -> ~fm3Routine);

@@ -1,31 +1,23 @@
 s = Server.local.boot;
-s.quit;
-
-// (0,0) is the top left of the screen
-// Most planet data in form global_position.x, global_position.y, relative_postiion.x, relative_position.y, velocity.x, velocity.y
+MIDIIn.connectAll;
 
 (
 ~main_routine = Routine.new({
 	var planetUpdateOSCListener;
 	var oscListenAddress = NetAddr("127.0.0.1", nil);
 	var oscListenPort = 57123;
-
-	// These are now globals
-	// var planet_data;
-	// var slider_data;
-	// var synth_controller;
-
+	
 	var midiListener;
+
+	var updateTask;
 
 	"util.scd".loadRelative;
 	"synths.scd".loadRelative;
 	"synthinstances.scd".loadRelative;
-	
-	MIDIIn.connectAll;
 
-	~planetCata = Dictionary.new(); // uid -> PlanetData
+	~planetData = Dictionary.new(); // uid -> PlanetData
 	~sliderData = Dictionary.new(); // slidernum -> value (0-127)
-	~synthController = List.new();
+	~synthControllers = List.new();
 
 	midiListener = MIDIFunc.new({arg val, ctrlNum, chan, src;
 		~sliderData[ctrlNum] = val;
@@ -43,11 +35,26 @@ s.quit;
 		~planetData[uid] = planetPosition;
 	}, '/planet/update', oscListenAddress, oscListenPort);
 
+	~synthControllers.add(Routine.new(~fm1RoutineFunc.value(1, 12)));
+
+	updateTask = Task.new({
+		loop({
+			~synthControllers.do({arg item, index;
+				item.next(True);
+			});
+			(1/60).wait;
+		});
+	}).play;
+
 	"waiting for exit".yield;
 	
 	planetUpdateOSCListener.free;
 	
 	"exiting routine".postln;
+	updateTask.stop;
+	~synthControllers.do({arg item, index;
+		item.next(nil);
+	});
 });
 )
 
