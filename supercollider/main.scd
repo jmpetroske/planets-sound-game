@@ -35,7 +35,9 @@ MIDIIn.connectAll;
 		~planetData[uid] = planetPosition;
 	}, '/planet/update', oscListenAddress, oscListenPort);
 
-	~synthControllers.add(Routine.new(~fm1RoutineFunc.value(1, 12)));
+	~synthControllers.add(Routine.new(~fm1RoutineFunc.value(0, 12, 2, 3)));
+	~synthControllers.add(Routine.new(~fm1RoutineFunc.value(1, 13, 1, 1)));
+	~synthControllers.add(Routine.new(~additiveRoutineFunc.value(2, 14)));
 
 	updateTask = Task.new({
 		loop({
