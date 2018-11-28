@@ -2,6 +2,10 @@ s = Server.local.boot;
 MIDIIn.connectAll;
 
 (
+~main_rountine.next;
+~main_rountine.next;
+~main_rountine.next;
+
 ~main_routine = Routine.new({
 	var planetUpdateOSCListener;
 	var oscListenAddress = NetAddr("127.0.0.1", nil);
@@ -37,7 +41,7 @@ MIDIIn.connectAll;
 
 	~synthControllers.add(Routine.new(~fm1RoutineFunc.value(0, 12, 2, 3)));
 	~synthControllers.add(Routine.new(~fm1RoutineFunc.value(1, 13, 1, 1)));
-	~synthControllers.add(Routine.new(~additiveRoutineFunc.value(2, 14)));
+	~synthControllers.add(Routine.new(~additiveRoutineFunc.value(2, [14, 15])));
 
 	updateTask = Task.new({
 		loop({

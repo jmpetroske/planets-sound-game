@@ -42,7 +42,7 @@
 	};
 };
 
-~additiveRoutineFunc = {arg planetUID, gainSliderIndex;
+~additiveRoutineFunc = {arg planetUID, gainSliderIndices;
 	{arg initData;
 		var updateFunc;
 
@@ -63,7 +63,7 @@
 		var dbPerPartial = 12;
 
 		// updatable data
-		var sliderGain = -inf;
+		var sliderGains = [-inf, -inf];
 		var mainPlanet = PlanetPosition.zero.value;
 
 		partialData.keysValuesDo({arg key, value;
@@ -79,6 +79,14 @@
 						\outbus, 0,
 						\cFreq, partialNum * (137/2),
 						\mFreq, 137/2,
+						\mIndexGain, -6,
+						\gain, -inf;
+					]),
+				Synth("simple_am_synth",
+					[
+						\outbus, 0,
+						\cFreq, partialNum * (137/2) * (3/2),
+						\mFreq, 137/2  * (3/2),
 						\mIndexGain, -6,
 						\gain, -inf;
 					]),
@@ -100,8 +108,9 @@
 			synths.keysValuesDo({arg partialNum, partialSynths;
 				var partialMaxAmp = partialData[partialNum];
 				var partialGain = (partialMaxAmp.ampdb - ((partialNum - richness) * dbPerPartial)).min(partialMaxAmp.ampdb);
-				partialSynths[0].set(\gain, sliderGain + partialGain + extraGain);
-				partialSynths[1].set(\gain, sliderGain + partialGain + extraGain - 6);
+				partialSynths[0].set(\gain, sliderGains[0] + partialGain + extraGain);
+				partialSynths[1].set(\gain, sliderGains[0] + sliderGains[1] + partialGain + extraGain - 3);
+				partialSynths[2].set(\gain, sliderGains[0] + partialGain + extraGain - 6);
 			});
 		};
 
@@ -110,7 +119,8 @@
 		initData = "Started synth controller".yield;
 		"started synth controller".postln;
 		while({initData.isNil.not}, {
-			sliderGain = ~midiToGain.value(~sliderData[gainSliderIndex] ? 0);
+			sliderGains[0] = ~midiToGain.value(~sliderData[gainSliderIndices[0]] ? 0);
+			sliderGains[1] = ~midiToGain.value(~sliderData[gainSliderIndices[1]] ? 0);
 			mainPlanet = ~planetData[planetUID] ? PlanetPosition.zero.value;
 
 			updateFunc.value();
