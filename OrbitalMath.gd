@@ -2,8 +2,31 @@ extends Node
 
 const mu = 10000000
 
+var planetBase = preload("res://basePlanet.tscn")
+
 func _ready():
-	pass
+#   [uid, [period, e, i, arg p (w), LAN, T]]
+	var planets = [
+		[1, [30, 0.2, PI, 0, 0, 0]],
+		[2, [30, 0.1, PI, PI, 0, 0]],
+	]
+
+#	var newP = planetBase.instance()
+#	get_tree().get_root().get_node("Node2D").add_child(newP)
+#	newP.position = Vector2(100, 100)
+#	newP.orbit_data = 
+#	newP.uid = 7
+
+	for newP in planets:
+		var inst = planetBase.instance()
+		get_tree().get_root().get_node("Node2D").add_child(inst)
+		inst.uid = newP[0]
+		inst.init_data = newP[1]
+#	for i in range(600):
+#		var inst = planetBase.instance()
+#		get_tree().get_root().get_node("Node2D").add_child(inst)
+#		inst.uid = i + 2
+#		inst.init_data = [randf() * 60 + 1, 0, PI, 0, 0, 0]
 
 func float_equal(a, b, epsilon = 0.000001):
 	return abs(a - b) <= epsilon
@@ -15,7 +38,6 @@ func kep_to_cart(data, cur_time):
 	var omega_AP = data[3]
 	var omega_LAN = data[4]
 	var T = data[5]
-	#var EA = data[6]
 	
 	#1
 	var n = sqrt(mu/(pow(a,3)))
@@ -105,7 +127,7 @@ func cart_to_kep(r_vec, v_vec, cur_time):
 	#12
 	var n = sqrt(mu/(pow(a,3)))
 	var T = (1/n)*(EA - e*sin(EA))
-	return [a, e, i, omega_AP, omega_LAN, T, EA]
+	return [a, e, i, omega_AP, omega_LAN, T]
 	
 func orbit_period(data):
 	var a = data[0]
@@ -114,6 +136,5 @@ func orbit_period(data):
 	var omega_AP = data[3]
 	var omega_LAN = data[4]
 	var T = data[5]
-	#var EA = data[6]
 	
 	return 2 * PI * sqrt(pow(a, 3) / mu)

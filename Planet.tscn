@@ -1,9 +1,8 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://MouseController.gd" type="Script" id=1]
 [ext_resource path="res://Planet.gd" type="Script" id=2]
 [ext_resource path="res://icon.png" type="Texture" id=3]
-[ext_resource path="res://OSCManager.gd" type="Script" id=4]
 
 [node name="Node2D" type="Node2D" index="0"]
 
@@ -18,109 +17,14 @@ _sections_unfolded = [ "Transform" ]
 velocity = Vector2( 0, 0 )
 uid = 0
 parent_uid = 0
+init_data = [ 30, 0.02, 3.14159, 0, 0, 0 ]
 
 [node name="Sprite" type="Sprite" parent="Sun" index="0"]
 
 texture = ExtResource( 3 )
 _sections_unfolded = [ "Material", "Transform" ]
 
-[node name="Planet1" type="Node2D" parent="." index="2"]
-
-position = Vector2( 610.887, 0 )
-script = ExtResource( 2 )
-_sections_unfolded = [ "Transform" ]
-velocity = Vector2( 0, -127.944 )
-uid = 1
-parent_uid = 0
-
-[node name="Sprite" type="Sprite" parent="Planet1" index="0"]
-
-texture = ExtResource( 3 )
-_sections_unfolded = [ "Material", "Transform" ]
-
-[node name="OSCsender" type="OSCsender" parent="Planet1" index="1"]
-
-ip = "127.0.0.1"
-port = 57123
-buffersize = 1024
-autostart = true
-autoclear = true
-script = ExtResource( 4 )
-_sections_unfolded = [ "Network" ]
-
-[node name="Planet2" type="Node2D" parent="." index="3"]
-
-position = Vector2( -610.887, 0 )
-script = ExtResource( 2 )
-_sections_unfolded = [ "Transform" ]
-velocity = Vector2( 0, 127.944 )
-uid = 2
-parent_uid = 0
-
-[node name="Sprite" type="Sprite" parent="Planet2" index="0"]
-
-texture = ExtResource( 3 )
-_sections_unfolded = [ "Material", "Transform" ]
-
-[node name="OSCsender" type="OSCsender" parent="Planet2" index="1"]
-
-ip = "127.0.0.1"
-port = 57123
-buffersize = 1024
-autostart = true
-autoclear = true
-script = ExtResource( 4 )
-_sections_unfolded = [ "Network" ]
-
-[node name="Planet3" type="Node2D" parent="." index="4"]
-
-position = Vector2( 0, -610.887 )
-script = ExtResource( 2 )
-_sections_unfolded = [ "Transform" ]
-velocity = Vector2( -127.944, 0 )
-uid = 3
-parent_uid = 0
-
-[node name="Sprite" type="Sprite" parent="Planet3" index="0"]
-
-texture = ExtResource( 3 )
-_sections_unfolded = [ "Material", "Transform" ]
-
-[node name="OSCsender" type="OSCsender" parent="Planet3" index="1"]
-
-ip = "127.0.0.1"
-port = 57123
-buffersize = 1024
-autostart = true
-autoclear = true
-script = ExtResource( 4 )
-_sections_unfolded = [ "Network" ]
-
-[node name="Planet4" type="Node2D" parent="." index="5"]
-
-position = Vector2( 26.1151, -610.887 )
-script = ExtResource( 2 )
-_sections_unfolded = [ "Transform" ]
-velocity = Vector2( -127.944, 757.88 )
-uid = 4
-parent_uid = 3
-
-[node name="Sprite" type="Sprite" parent="Planet4" index="0"]
-
-texture = ExtResource( 3 )
-_sections_unfolded = [ "Material", "Transform" ]
-
-[node name="OSCsender" type="OSCsender" parent="Planet4" index="1"]
-
-ip = "127.0.0.1"
-port = 57123
-buffersize = 1024
-autostart = true
-autoclear = true
-script = ExtResource( 4 )
-_sections_unfolded = [ "Network" ]
-
-[node name="Camera2D" type="Camera2D" parent="." index="6"]
+[node name="Camera2D" type="Camera2D" parent="." index="2"]
 
 position = Vector2( 6.10352e-05, -1.67017 )
 anchor_mode = 1
