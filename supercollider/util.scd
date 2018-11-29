@@ -1,4 +1,4 @@
-~midiToGain = {arg midiVal;
+~midiToGain = {arg midiVal, lowerVal = -75.6, upperVal = 0;
 	// change in 10 results in a change of 6 dB
 	
 	var returnVal = -inf;

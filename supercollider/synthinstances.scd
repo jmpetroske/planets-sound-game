@@ -42,7 +42,7 @@
 	};
 };
 
-~additiveRoutineFunc = {arg planetUID, gainSliderIndices;
+~additiveRoutineFunc = {arg planetUIDs, gainSliderIndices;
 	{arg initData;
 		var updateFunc;
 
@@ -63,15 +63,11 @@
 		var dbPerPartial = 12;
 
 		// updatable data
-		var sliderGains = [-inf, -inf];
-		var mainPlanet = PlanetPosition.zero.value;
+		var sliderVals;
 
 		partialData.keysValuesDo({arg key, value;
 			var partialNum = key;
-			var partialMaxAmp = value;
-			var partialGain;
 
-			partialGain = (partialMaxAmp.ampdb - ((partialNum - richness) * dbPerPartial)).min(partialMaxAmp.ampdb);
 			// outbus = 0, cFreq, mFreq, mIndexGain = 0, gain = -12
 			synths.add(partialNum -> [
 				Synth("simple_am_synth",
@@ -103,25 +99,24 @@
 		});
 
 		updateFunc = {
-			richness = mainPlanet.globalPos.x.linlin(-400, 400, 7, 1.5);
+			var richness = sliderVals[0].linlin(0, 127, 1.5, 7);
+			var masterGain = ~midiToGain.value(sliderVals[1]);
 			
 			synths.keysValuesDo({arg partialNum, partialSynths;
 				var partialMaxAmp = partialData[partialNum];
 				var partialGain = (partialMaxAmp.ampdb - ((partialNum - richness) * dbPerPartial)).min(partialMaxAmp.ampdb);
-				partialSynths[0].set(\gain, sliderGains[0] + partialGain + extraGain);
-				partialSynths[1].set(\gain, sliderGains[0] + sliderGains[1] + partialGain + extraGain - 3);
-				partialSynths[2].set(\gain, sliderGains[0] + partialGain + extraGain - 6);
+				partialSynths[0].set(\gain, masterGain + partialGain + extraGain);
+				partialSynths[2].set(\gain, masterGain + partialGain + extraGain - 6);
 			});
 		};
-
-		updateFunc.value;
 
 		initData = "Started synth controller".yield;
 		"started synth controller".postln;
 		while({initData.isNil.not}, {
-			sliderGains[0] = ~midiToGain.value(~sliderData[gainSliderIndices[0]] ? 0);
-			sliderGains[1] = ~midiToGain.value(~sliderData[gainSliderIndices[1]] ? 0);
-			mainPlanet = ~planetData[planetUID] ? PlanetPosition.zero.value;
+			sliderVals = Array.newClear(gainSliderIndices.size);
+			gainSliderIndices.do({arg item, index;
+				sliderVals[index] = ~sliderData[item] ? 0;
+			});
 
 			updateFunc.value();
 			initData = "Updated synth controller".yield;
@@ -135,5 +130,3 @@
 		});
 	};
 };
-
-// Point.new(0, 1).asPolar.angle
