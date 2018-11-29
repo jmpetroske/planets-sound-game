@@ -1,6 +1,9 @@
 s = Server.local.boot;
 MIDIIn.connectAll;
 
+~clipsLocation = "clips";
+"buffLoader.scd".loadRelative;
+
 (
 ~main_rountine.next;
 ~main_rountine.next;
@@ -39,9 +42,9 @@ MIDIIn.connectAll;
 		~planetData[uid] = planetPosition;
 	}, '/planet/update', oscListenAddress, oscListenPort);
 
-	~synthControllers.add(Routine.new(~fm1RoutineFunc.value(0, 12, 2, 3)));
-	~synthControllers.add(Routine.new(~fm1RoutineFunc.value(1, 13, 1, 1)));
-	~synthControllers.add(Routine.new(~additiveRoutineFunc.value(2, [14, 15])));
+	~synthControllers.add(Routine.new(~fm1RoutineFunc.value(1, 12, 2, 3)));
+	~synthControllers.add(Routine.new(~fm1RoutineFunc.value(2, 13, 1, 1)));
+	~synthControllers.add(Routine.new(~additiveRoutineFunc.value(4, [14, 15])));
 
 	updateTask = Task.new({
 		loop({

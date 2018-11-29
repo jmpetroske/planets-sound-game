@@ -135,3 +135,5 @@
 		});
 	};
 };
+
+// Point.new(0, 1).asPolar.angle

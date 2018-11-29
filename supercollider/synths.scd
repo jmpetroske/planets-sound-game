@@ -92,6 +92,63 @@
 });
 
 
+// Not to be used but with anything but ahhoo.wav (too many hardcoded values)
+(
+~agsBufSynth = SynthDef.new('ags_buf_noise_synth', {
+	arg outbus = 0, buffer, gain = -12, q = 1, position = 0, wavRatio = 1.0, refFreq = 137;
+    var trigger;
+    var granSig;
+    var out;
+    var grainDur, grainFreq, envFreq;
+	var index;
+	var bufferPeriods;
+
+    envFreq = wavRatio * refFreq / (2 * q);
+    grainDur = envFreq.reciprocal;
+	bufferPeriods = (refFreq * BufDur.kr(buffer)) - 20;
+
+	// position = MouseY.kr(0, 1);
+	position = MouseY.kr(0.43, 0.76);
+
+	// 0.15 randomness is good
+	position = position + (LFNoise0.ar(refFreq * 60) * MouseX.kr(0, 0.3));
+	MouseX.kr(0, 0.3).poll;
+	
+	// position = LinLin.kr(position, 0, 1, 0.76, 0.43);
+	index = (position * bufferPeriods).floor / bufferPeriods;
+	// index = position;
+
+    trigger = Dust.ar(refFreq * 30); // asynchronous trigger
+	granSig = GrainBuf.ar(
+		numChannels: 1,
+		trigger: trigger,
+		dur: grainDur,
+		sndbuf: buffer,
+		rate: wavRatio,
+		pos: index,
+		maxGrains: 1024
+	);
+
+
+	granSig = HPF.ar(granSig, 500);
+
+    Out.ar(outbus, granSig * gain.dbamp);
+}).add;
+)
+
+// ~instance = Synth("ags_buf_noise_synth", [\buffer, ~ahhooBuf, \gain, -30, \q, 2]);
+// ~instance.set(\wavRatio, 1);
+// ~instance.set(\q, 3);
+// ~instance.free;
+
+// // randomness = -0.15
+
+// ~instance2 = Synth("ags_buf_noise_synth", [\buffer, ~ahhooBuf, \gain, -30, \q, 2]);
+// ~instance2.set(\wavRatio, 0.5);
+// ~instance2.set(\gain, -20);
+// ~instance2.set(\q, 4);
+// ~instance2.free;
+
 // ~instance.set(\freq, 98, \cratio, 3, \mratio, 4, \modulationindex, 1.2, \amp, -20);
 // ~instance = Synth("formant_synth", [\vowel, 0]);
 // ~instance.set(\vowel, 1.0);
@@ -106,4 +163,6 @@
 // ~instance.set(\vowel, 0.1);
 // ~instance.set(\vowel, 0.0);
 
-// ~instance.free;
+	// ~instance.free;
+	
+

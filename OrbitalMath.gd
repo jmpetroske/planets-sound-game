@@ -2,13 +2,6 @@ extends Node
 
 const mu = 10000000
 
-var current_id = 0
-
-func get_uid():
-	var retval = current_id
-	current_id = current_id + 1
-	return retval
-
 func _ready():
 	pass
 
@@ -103,7 +96,6 @@ func cart_to_kep(r_vec, v_vec, cur_time):
 #	var omega_AP = lat - nu
 	var e_vec = ((pow(v, 2) / mu) - (1/r)) * r_vec - ((r_vec.dot(v_vec)/mu) * v_vec)
 #	var e_vec = v_vec.cross(h_bar)/mu - r_vec/r
-	print(str(e_vec))
 	var omega_AP = atan2(e_vec.y, e_vec.x)
 	if r_vec.cross(v_vec).z < 0:
 		omega_AP = 2*PI - omega_AP
