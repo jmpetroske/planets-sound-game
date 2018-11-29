@@ -18,8 +18,8 @@
 		synth = Synth("fm_synth", [\outbus, panBus, \freq, 137, \cratio, cratio, \mratio, mratio, \gain, -inf]);
 
 		updateFunc = {
-			synth.set(\modulationindex, mainPlanet.globalPos.y.linlin(-300, 1, 5, 0));
-			synth.set(\gain, sliderGain + mainPlanet.globalPos.y.linlin(-250, 100, -24, -50, \min));
+			synth.set(\modulationindex, mainPlanet.globalPos.y.linlin(0, 300, 0, 5));
+			synth.set(\gain, sliderGain + mainPlanet.globalPos.y.linlin(-100, 250, -50, -24, \min));
 			panner.set(\pos, mainPlanet.globalPos.x.linlin(-400, 400, -0.8, 0.8));
 		};
 

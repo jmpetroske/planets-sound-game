@@ -1,8 +1,10 @@
+(
 s = Server.local.boot;
 MIDIIn.connectAll;
 
 ~clipsLocation = "clips";
 "buffLoader.scd".loadRelative;
+)
 
 (
 ~main_rountine.next;
