@@ -4,11 +4,14 @@ const mu = 10000000
 
 var planetBase = preload("res://basePlanet.tscn")
 
+var _planets = {}
+
 func _ready():
 #   [uid, [period, e, i, arg p (w), LAN, T]]
-	var planets = [
-		[1, [30, 0.2, PI, 0, 0, 0]],
-		[2, [30, 0.1, PI, PI, 0, 0]],
+	var planetInitData = [
+		[1, 0, [30, 0.2, PI, 0, 0, 0]],
+		[2, 0, [30, 0.1, PI, PI, 0, 0]],
+		[3, 2, [0.75, 0.1, PI, PI, 0, 0]],
 	]
 
 #	var newP = planetBase.instance()
@@ -17,11 +20,19 @@ func _ready():
 #	newP.orbit_data = 
 #	newP.uid = 7
 
-	for newP in planets:
+	var sun = get_tree().get_root().get_node("Node2D").get_node("Sun")
+	_planets[0] = sun
+	for newP in planetInitData:
+		var uid = newP[0]
+		var parent_uid = newP[1]
+		var init_data = newP[2]
+		
 		var inst = planetBase.instance()
-		get_tree().get_root().get_node("Node2D").add_child(inst)
-		inst.uid = newP[0]
-		inst.init_data = newP[1]
+		_planets[parent_uid].add_child(inst)
+		_planets[uid] = inst
+		inst.uid = uid
+		inst.init_data = init_data
+		inst.name = str(uid)
 #	for i in range(600):
 #		var inst = planetBase.instance()
 #		get_tree().get_root().get_node("Node2D").add_child(inst)
