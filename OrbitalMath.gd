@@ -11,7 +11,10 @@ func _ready():
 	var planetInitData = [
 		[1, 0, [30, 0.2, PI, 0, 0, 0]],
 		[2, 0, [30, 0.1, PI, PI, 0, 0]],
-		[3, 2, [0.75, 0.1, PI, PI, 0, 0]],
+		[3, 0, [3.75, 0.75, PI, PI, 0, 1.875]],
+		[4, 3, [0.46875, 0, PI, PI, 0, 0]],
+		[5, 0, [15, 0.05, PI, 0, 0, 0]],
+		[6, 0, [7.5, 0.05, PI, 0, 0, 0]],
 	]
 
 #	var newP = planetBase.instance()
@@ -33,11 +36,6 @@ func _ready():
 		inst.uid = uid
 		inst.init_data = init_data
 		inst.name = str(uid)
-#	for i in range(600):
-#		var inst = planetBase.instance()
-#		get_tree().get_root().get_node("Node2D").add_child(inst)
-#		inst.uid = i + 2
-#		inst.init_data = [randf() * 60 + 1, 0, PI, 0, 0, 0]
 
 func float_equal(a, b, epsilon = 0.000001):
 	return abs(a - b) <= epsilon

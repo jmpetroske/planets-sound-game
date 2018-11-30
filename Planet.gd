@@ -19,7 +19,6 @@ var cur_time = 0
 
 func _ready():
 	if uid != 0:
-		print(OrbitalMath.mu)
 		var a = pow(OrbitalMath.mu * pow(init_data[0], 2) / (4 * pow(PI, 2)), 1.0/3);
 		# 	return [a, e, i, omega_AP, omega_LAN, T]
 		orbit_data = [
@@ -30,6 +29,7 @@ func _ready():
 						init_data[4],
 						init_data[5]
 					];
+		print(name + ": " + str(orbit_data))
 
 func _enter_tree():
 	get_owner()

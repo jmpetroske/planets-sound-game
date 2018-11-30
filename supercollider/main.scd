@@ -1,15 +1,10 @@
-(
 s = Server.local.boot;
 MIDIIn.connectAll;
-
 ~clipsLocation = "clips";
 "buffLoader.scd".loadRelative;
-)
 
 (
-~main_rountine.next;
-~main_rountine.next;
-~main_rountine.next;
+~main_rountine.stop;
 
 ~main_routine = Routine.new({
 	var planetUpdateOSCListener;
@@ -45,8 +40,12 @@ MIDIIn.connectAll;
 	}, '/planet/update', oscListenAddress, oscListenPort);
 
 	~synthControllers.add(Routine.new(~fm1RoutineFunc.value(1, 12, 1, 2)));
+	0.1.wait;
 	~synthControllers.add(Routine.new(~fm1RoutineFunc.value(2, 13, 2, 3)));
-	~synthControllers.add(Routine.new(~additiveRoutineFunc.value([], [14, 15, 16])));
+	0.1.wait;	
+	~synthControllers.add(Routine.new(~additiveRoutineFunc.value([], [14, 15])));
+	0.1.wait;	
+	~synthControllers.add(Routine.new(~rhythmicNoiseRoutineFunc.value([3, 4], [16])));
 
 	updateTask = Task.new({
 		loop({
@@ -65,7 +64,9 @@ MIDIIn.connectAll;
 	updateTask.stop;
 	~synthControllers.do({arg item, index;
 		item.next(nil);
+		item.stop;
 	});
 });
-~main_routine.next;
 )
+~main_routine.play;
+~main_routine.next;

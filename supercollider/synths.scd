@@ -93,9 +93,8 @@
 
 
 // Not to be used but with anything but ahhoo.wav (too many hardcoded values)
-(
 ~agsBufSynth = SynthDef.new('ags_buf_noise_synth', {
-	arg outbus = 0, buffer, gain = -12, q = 1, position = 0, wavRatio = 1.0, refFreq = 137;
+	arg outbus = 0, buffer, gain = -12, q = 1, position = 0, wavRatio = 1.0, refFreq = 137, randomness = 0.15;
     var trigger;
     var granSig;
     var out;
@@ -108,11 +107,10 @@
 	bufferPeriods = (refFreq * BufDur.kr(buffer)) - 20;
 
 	// position = MouseY.kr(0, 1);
-	position = MouseY.kr(0.43, 0.76);
+	position = LinLin.ar(position, 0.43, 0.76);
 
 	// 0.15 randomness is good
-	position = position + (LFNoise0.ar(refFreq * 60) * MouseX.kr(0, 0.3));
-	MouseX.kr(0, 0.3).poll;
+	position = position + (LFNoise0.ar(refFreq * 60) * randomness);
 	
 	// position = LinLin.kr(position, 0, 1, 0.76, 0.43);
 	index = (position * bufferPeriods).floor / bufferPeriods;
@@ -126,15 +124,50 @@
 		sndbuf: buffer,
 		rate: wavRatio,
 		pos: index,
-		maxGrains: 1024
 	);
-
 
 	granSig = HPF.ar(granSig, 500);
 
     Out.ar(outbus, granSig * gain.dbamp);
 }).add;
-)
+
+// ~fireSynth = SynthDef.new('buf_granulator', {
+// 	arg outbus = 0, buffer, gain = -12, randomness;
+//     var trigger;
+//     var granSig;
+//     var out;
+//     var grainDur, grainFreq, envFreq;
+// 	var index;
+// 	var bufferPeriods;
+
+//     envFreq = wavRatio * refFreq / (2 * q);
+//     grainDur = envFreq.reciprocal;
+// 	bufferPeriods = (refFreq * BufDur.kr(buffer)) - 20;
+
+// 	// position = MouseY.kr(0, 1);
+// 	position = LinLin.ar(position, 0.43, 0.76);
+
+// 	// 0.15 randomness is good
+// 	position = position + (LFNoise0.ar(refFreq * 60) * randomness);
+	
+// 	// position = LinLin.kr(position, 0, 1, 0.76, 0.43);
+// 	index = (position * bufferPeriods).floor / bufferPeriods;
+// 	// index = position;
+
+//     trigger = Dust.ar(refFreq * 30); // asynchronous trigger
+// 	granSig = GrainBuf.ar(
+// 		numChannels: 1,
+// 		trigger: trigger,
+// 		dur: grainDur,
+// 		sndbuf: buffer,
+// 		rate: wavRatio,
+// 		pos: index,
+// 	);
+
+// 	granSig = HPF.ar(granSig, 500);
+
+//     Out.ar(outbus, granSig * gain.dbamp);
+// }).add;
 
 // ~instance = Synth("ags_buf_noise_synth", [\buffer, ~ahhooBuf, \gain, -30, \q, 2]);
 // ~instance.set(\wavRatio, 1);
