@@ -4,6 +4,6 @@
 	var returnVal = -inf;
 	if(midiVal != 0,
 		// see https://docs.cycling74.com/max7/maxobject/gain~
-		{returnVal = midiVal.linlin(0, 127, -75.6, 0);});
+		{returnVal = midiVal.linlin(0, 127, lowerVal, upperVal);});
 	returnVal;
 };

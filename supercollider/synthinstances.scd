@@ -1,3 +1,47 @@
+~templeteRoutineFunc = {arg planetUIDs, gainSliderIndices;
+	{arg initData;
+		var updateFunc;
+
+		var synths = Dictionary.new();
+
+		// updatable data
+		var planetVals;
+		var sliderVals;
+
+		// init Synths here
+
+		// end init synths
+
+		updateFunc = {
+			// update synths here
+
+			// end update synths
+		};
+
+		initData = "Started synth controller".yield;
+		"started synth controller".postln;
+		while({initData.isNil.not}, {
+			sliderVals = Array.newClear(gainSliderIndices.size);
+			gainSliderIndices.do({arg item, index;
+				sliderVals[index] = ~sliderData[item] ? 0;
+			});
+
+			planetVals = Array.newClear(planetUIDs.size);
+			planetUIDs.do({arg item, index;
+				planetVals[index] = ~planetData[item] ? PlanetPosition.zero.value;
+			});
+
+			updateFunc.value();
+			initData = "Updated synth controller".yield;
+		});
+
+		"Stopping synth controller".postln;
+		// cleanup here
+
+		// end cleanup
+	};
+};
+
 ~fm1RoutineFunc = {arg planetUID, gainSliderIndex, cratio = 2, mratio = 3;
 	{arg initData;
 		// initialization here
@@ -93,7 +137,7 @@
 
 		updateFunc = {
 			var richness = sliderVals[0].linlin(0, 127, 1.5, 7);
-			var masterGain = ~midiToGain.value(sliderVals[1]);
+			var masterGain = ~midiToGain.value(sliderVals[1], -35);
 			
 			synths.keysValuesDo({arg partialNum, partialSynths;
 				var partialMaxAmp = partialData[partialNum];
@@ -164,7 +208,7 @@
 			// update synths here
 			var planet = planetVals[0];
 			var moon = planetVals[1];
-			var masterGain = ~midiToGain.value(sliderVals[0]);
+			var masterGain = ~midiToGain.value(sliderVals[0], -30);
 
 			// var planetAngle = planet.relativePos.angle;
 			var distance = planet.relativePos.dist(Point(0, 0));
@@ -211,23 +255,31 @@
 	};
 };
 
-~templeteRoutineFunc = {arg planetUIDs, gainSliderIndices;
+~fireRoutineFunc = {arg planetUIDs, gainSliderIndices;
 	{arg initData;
 		var updateFunc;
 
-		var synths = Dictionary.new();
+		var synth;
 
 		// updatable data
 		var planetVals;
 		var sliderVals;
 
 		// init Synths here
+		// arg outbus = 0, buffer, gain = -12, grainRate, grainDur, playRate = 1, posRand = 30, rateRand = 0.1;
+		synth = {arg gain = -inf;
+			Out.ar(0, PlayBuf.ar(
+				numChannels: 1,
+				bufnum: ~fireBuf,
+				loop: 1) * gain.dbamp
+			);
+		}.play;
 
 		// end init synths
 
 		updateFunc = {
 			// update synths here
-
+			synth.set(\gain, ~midiToGain.value(sliderVals[0], -45));
 			// end update synths
 		};
 
@@ -250,7 +302,7 @@
 
 		"Stopping synth controller".postln;
 		// cleanup here
-
+		synth.free;
 		// end cleanup
 	};
 };

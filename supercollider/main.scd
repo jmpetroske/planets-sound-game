@@ -46,6 +46,8 @@ MIDIIn.connectAll;
 	~synthControllers.add(Routine.new(~additiveRoutineFunc.value([], [14, 15])));
 	0.1.wait;	
 	~synthControllers.add(Routine.new(~rhythmicNoiseRoutineFunc.value([3, 4], [16])));
+	0.1.wait;
+	~synthControllers.add(Routine.new(~fireRoutineFunc.value([], [17])));
 
 	updateTask = Task.new({
 		loop({

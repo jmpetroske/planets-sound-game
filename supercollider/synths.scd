@@ -131,43 +131,38 @@
     Out.ar(outbus, granSig * gain.dbamp);
 }).add;
 
-// ~fireSynth = SynthDef.new('buf_granulator', {
-// 	arg outbus = 0, buffer, gain = -12, randomness;
-//     var trigger;
-//     var granSig;
-//     var out;
-//     var grainDur, grainFreq, envFreq;
-// 	var index;
-// 	var bufferPeriods;
+~fireSynth = SynthDef.new('buf_granulator', {
+	arg outbus = 0, buffer, gain = -12, grainRate, grainDur, playRate = 1, posRand = 30, rateRand = 0.1;
+    var trigger;
+    var granSig;
+	var position;
+	var noise;
 
-//     envFreq = wavRatio * refFreq / (2 * q);
-//     grainDur = envFreq.reciprocal;
-// 	bufferPeriods = (refFreq * BufDur.kr(buffer)) - 20;
+	noise = LFNoise0.ar(500);
+	position = ((noise + 1) * posRand) / BufDur.kr(buffer);
+	position = 0;
 
-// 	// position = MouseY.kr(0, 1);
-// 	position = LinLin.ar(position, 0.43, 0.76);
+    trigger = Impulse.ar(grainRate);
+	granSig = GrainBuf.ar(
+		numChannels: 1,
+		trigger: trigger,
+		dur: grainDur,
+		sndbuf: buffer,
+		rate: playRate * ((noise * rateRand) + 1),
+		pos: position,
+	);
 
-// 	// 0.15 randomness is good
-// 	position = position + (LFNoise0.ar(refFreq * 60) * randomness);
+    Out.ar(outbus, granSig * gain.dbamp);
+}).add;
+
+~blnSynth = SynthDef.new('bln_synth', {arg outbus = 0, carFreq, q, gain;
+	var noise, carrier;
 	
-// 	// position = LinLin.kr(position, 0, 1, 0.76, 0.43);
-// 	index = (position * bufferPeriods).floor / bufferPeriods;
-// 	// index = position;
+	noise = LFNoise2.ar(carFreq / (2 * q));
+	carrier = SinOsc.ar(carFreq);
 
-//     trigger = Dust.ar(refFreq * 30); // asynchronous trigger
-// 	granSig = GrainBuf.ar(
-// 		numChannels: 1,
-// 		trigger: trigger,
-// 		dur: grainDur,
-// 		sndbuf: buffer,
-// 		rate: wavRatio,
-// 		pos: index,
-// 	);
-
-// 	granSig = HPF.ar(granSig, 500);
-
-//     Out.ar(outbus, granSig * gain.dbamp);
-// }).add;
+    Out.ar(outbus, carrier * noise * gain.dbamp);
+}).add;
 
 // ~instance = Synth("ags_buf_noise_synth", [\buffer, ~ahhooBuf, \gain, -30, \q, 2]);
 // ~instance.set(\wavRatio, 1);
