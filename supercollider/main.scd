@@ -40,14 +40,16 @@ MIDIIn.connectAll;
 	}, '/planet/update', oscListenAddress, oscListenPort);
 
 	~synthControllers.add(Routine.new(~fm1RoutineFunc.value(1, 12, 1, 2)));
-	0.1.wait;
+	0.2.wait;
 	~synthControllers.add(Routine.new(~fm1RoutineFunc.value(2, 13, 2, 3)));
-	0.1.wait;	
+	0.2.wait;	
 	~synthControllers.add(Routine.new(~additiveRoutineFunc.value([], [14, 15])));
-	0.1.wait;	
+	0.2.wait;	
 	~synthControllers.add(Routine.new(~rhythmicNoiseRoutineFunc.value([3, 4], [16])));
-	0.1.wait;
+	0.2.wait;
 	~synthControllers.add(Routine.new(~fireRoutineFunc.value([], [17])));
+	0.2.wait;
+	~synthControllers.add(Routine.new(~asteroidRoutineFunc.value([7,8,9,10], [18])));
 
 	updateTask = Task.new({
 		loop({

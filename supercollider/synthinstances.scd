@@ -274,6 +274,7 @@
 				loop: 1) * gain.dbamp
 			);
 		}.play;
+		synth.postln;
 
 		// end init synths
 
@@ -303,6 +304,104 @@
 		"Stopping synth controller".postln;
 		// cleanup here
 		synth.free;
+		// end cleanup
+	};
+};
+
+~asteroidRoutineFunc = {arg planetUIDs, gainSliderIndices;
+	{arg initData;
+		var updateFunc;
+
+		// updatable data
+		var planetVals;
+		var sliderVals;
+
+		var speedMax = -inf;
+		var speedMin = inf;
+		var ampMax = -inf;
+		var ampMin = inf;
+
+		// init Synths here
+		var synths = Array.newClear(planetUIDs.size);
+		planetUIDs.do({arg item, index;
+			synths[index] = Synth("bln_synth", [
+				\carFreq, 137 * 2,
+				\q, 1.3,
+				\gain, -inf
+			]);
+			synths[index].postln;
+		});
+
+		// end init synths
+
+		updateFunc = {
+			// update synths here
+			synths.do({arg synth, index;
+				var normalizedDirection;
+				var speedTowardsSun;
+				normalizedDirection = Point.new(planetVals[index].relativePos.x,
+					planetVals[index].relativePos.x);
+				normalizedDirection = normalizedDirection / normalizedDirection.dist(Point.new(0, 0));
+				speedTowardsSun = -1 * (
+					(planetVals[index].relativeVel.x * normalizedDirection.x) + 
+					(planetVals[index].relativeVel.y * normalizedDirection.y));
+				if(index == 0, {
+					speedTowardsSun.linlin(-500, 409.9, 274, 274 * 2).postln;
+				});
+
+				// For asteroid:
+				// [7, 0, [30, 0.9, PI, PI, 0, 15]],
+				// [8, 0, [30, 0.91, PI, PI + 0.03, 0, 15 - 1]],
+				// [9, 0, [30, 0.895, PI, PI - 0.02, 0, 15 - 1.4]],
+				// [10, 0, [30, 0.905, PI, PI + 0.02, 0, 15 - 4]],
+				//
+				// speed:
+				// 409.84768320776, -500.46975718179
+				// amp: 10.51845461148, 3.8053333275709
+				// amp: 0.00029690310797345 7.3453324582332e-07
+				// speedMax = speedTowardsSun.max(speedMax);
+				// speedMin = speedTowardsSun.min(speedMin);
+				// ampMax = pow(planetVals[index].globalPos.dist(Point(0, 0)), 1/3).max(ampMax);
+				// ampMin = pow(planetVals[index].globalPos.dist(Point(0, 0)), 1/3).min(ampMin);
+				// ampMax = (1 / pow(planetVals[index].globalPos.dist(Point(0, 0)), 2)).max(ampMax);
+				// ampMin = (1 / pow(planetVals[index].globalPos.dist(Point(0, 0)), 2)).min(ampMin);
+				// speedMax.postln;
+				// speedMin.postln;
+				// ampMax.postln;
+				// ampMin.postln;
+				synth.set(
+					\carFreq, speedTowardsSun.linlin(-500, 409.9, 274, 274 * 2),
+					// \q, 
+					\gain, ~midiToGain.value(sliderVals[0], -45) +
+					(1 / pow(planetVals[index].globalPos.dist(Point(0, 0)), 2)).linlin(7.3453324582332e-07, 0.00029690310797345, -30, 0)
+				);
+			});
+					
+			// end update synths
+		};
+
+		initData = "Started synth controller".yield;
+		"started synth controller".postln;
+		while({initData.isNil.not}, {
+			sliderVals = Array.newClear(gainSliderIndices.size);
+			gainSliderIndices.do({arg item, index;
+				sliderVals[index] = ~sliderData[item] ? 0;
+			});
+
+			planetVals = Array.newClear(planetUIDs.size);
+			planetUIDs.do({arg item, index;
+				planetVals[index] = ~planetData[item] ? PlanetPosition.zero.value;
+			});
+
+			updateFunc.value();
+			initData = "Updated synth controller".yield;
+		});
+
+		"Stopping synth controller".postln;
+		// cleanup here
+		synths.do({arg synth, index;
+			synth.free;
+		});
 		// end cleanup
 	};
 };

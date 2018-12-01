@@ -155,7 +155,7 @@
     Out.ar(outbus, granSig * gain.dbamp);
 }).add;
 
-~blnSynth = SynthDef.new('bln_synth', {arg outbus = 0, carFreq, q, gain;
+~blnSynth = SynthDef.new('bln_synth', {arg outbus = 0, carFreq, q, gain = -12;
 	var noise, carrier;
 	
 	noise = LFNoise2.ar(carFreq / (2 * q));
