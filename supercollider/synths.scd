@@ -170,6 +170,43 @@
     Out.ar(outbus, outsig);
 }).add;
 
+~launchGranulator = SynthDef.new('launch_granulator_synth', {
+	arg outbus = 0, buffer = ~landingBuf, gain = 0, grainRate = 5, grainDur = 2, playRate = 1, posStart = 7, posEnd = 15, posRand = 30, rateRand = 0.1, minFreq = 137, combFreq = 137, combGain = -8;
+    var trigger;
+    var granSig;
+	var position;
+	var noise;
+	var dur = BufDur.kr(buffer);
+	var outsig;
+
+	var maxDelayTime, delayTime, decayTime;
+	var cFac, gFac;
+
+	noise = LFNoise0.ar(500);
+	position = LinLin.ar(noise, -1, 1, posStart/dur, posEnd/dur);
+
+    trigger = Impulse.ar(grainRate);
+	granSig = GrainBuf.ar(
+		numChannels: 1,
+		trigger: trigger,
+		dur: grainDur,
+		sndbuf: buffer,
+		rate: playRate * ((noise * rateRand) + 1),
+		pos: position,
+	);
+
+	combFreq = LinLin.ar(SinOsc.ar(1/9), -1, 1, 137, 137 * 2);
+
+	maxDelayTime = ~combDelayFunc.value(minFreq);
+	delayTime = ~combDelayFunc.value(combFreq);
+	#cFac, gFac = ~evenCombCoeffsFunc.value(combGain);
+	decayTime = ~combT60Func.value(delayTime, gFac);
+
+	outsig = CombC.ar(granSig, maxDelayTime, delayTime, decayTime, cFac * gFac, cFac * granSig);
+
+    Out.ar(outbus, outsig * gain.dbamp);
+}).add;
+
 // ~instance = Synth("ags_buf_noise_synth", [\buffer, ~ahhooBuf, \gain, -30, \q, 2]);
 // ~instance.set(\wavRatio, 1);
 // ~instance.set(\q, 3);
