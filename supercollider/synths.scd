@@ -155,13 +155,19 @@
     Out.ar(outbus, granSig * gain.dbamp);
 }).add;
 
-~blnSynth = SynthDef.new('bln_synth', {arg outbus = 0, carFreq, q, gain = -12;
+~blnSynth = SynthDef.new('bln_synth', {arg outbus = 0, carFreq, q = 1, gain = -12;
 	var noise, carrier;
-	
-	noise = LFNoise2.ar(carFreq / (2 * q));
-	carrier = SinOsc.ar(carFreq);
+	var car;
+	var outsig;
 
-    Out.ar(outbus, carrier * noise * gain.dbamp);
+	car = LPF.ar(K2A.ar(carFreq), 15);
+	
+	noise = LFDNoise3.ar(car / (2*q));
+	carrier = SinOsc.ar(car);
+
+	outsig = FreeVerb.ar(carrier * noise * gain.dbamp, 0.5, 0.5, 0.5);
+	
+    Out.ar(outbus, outsig);
 }).add;
 
 // ~instance = Synth("ags_buf_noise_synth", [\buffer, ~ahhooBuf, \gain, -30, \q, 2]);

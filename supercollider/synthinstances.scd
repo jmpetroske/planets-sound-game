@@ -200,7 +200,7 @@
 				\refFreq, 137
 			]
 		);
-				
+		
 		
 		// end init synths
 		
@@ -225,7 +225,7 @@
 			// noise.set(\position, position);
 			// noise.set(\randomness, position.linlin(0, 1, 0.2, 0.08));
 
-						// noise.set(\position, 
+			// noise.set(\position, 
 			
 			// end update synths
 		};
@@ -274,7 +274,6 @@
 				loop: 1) * gain.dbamp
 			);
 		}.play;
-		synth.postln;
 
 		// end init synths
 
@@ -316,17 +315,18 @@
 		var planetVals;
 		var sliderVals;
 
-		var speedMax = -inf;
-		var speedMin = inf;
-		var ampMax = -inf;
-		var ampMin = inf;
+		// var speedMax = -inf;
+		// var speedMin = inf;
+		// var ampMax = -inf;
+		// var ampMin = inf;
 
 		// init Synths here
 		var synths = Array.newClear(planetUIDs.size);
+		var synthFreqs = Array.newClear(planetUIDs.size);		
 		planetUIDs.do({arg item, index;
+			synthFreqs[index] = 137 * 1.7.rrand(2.4);
 			synths[index] = Synth("bln_synth", [
-				\carFreq, 137 * 2,
-				\q, 1.3,
+				\carFreq, synthFreqs[index];
 				\gain, -inf
 			]);
 			synths[index].postln;
@@ -342,12 +342,9 @@
 				normalizedDirection = Point.new(planetVals[index].relativePos.x,
 					planetVals[index].relativePos.x);
 				normalizedDirection = normalizedDirection / normalizedDirection.dist(Point.new(0, 0));
-				speedTowardsSun = -1 * (
+				speedTowardsSun = 1 * (
 					(planetVals[index].relativeVel.x * normalizedDirection.x) + 
 					(planetVals[index].relativeVel.y * normalizedDirection.y));
-				if(index == 0, {
-					speedTowardsSun.linlin(-500, 409.9, 274, 274 * 2).postln;
-				});
 
 				// For asteroid:
 				// [7, 0, [30, 0.9, PI, PI, 0, 15]],
@@ -369,14 +366,21 @@
 				// speedMin.postln;
 				// ampMax.postln;
 				// ampMin.postln;
+				// \gain, ~midiToGain.value(sliderVals[0], -45) + (1 / pow(planetVals[index].globalPos.dist(Point(0, 0)), 2)).linlin(7.3453324582332e-07, 0.00029690310797345, -30, 0)
+				// synth.set(
+				// 	\carFreq, speedTowardsSun.linlin(-500, 409.9, 274, 274 * 2),
+				// 	// \q, 
+				// 	\gain, ~midiToGain.value(sliderVals[0], -45) +
+				// 	(1 / pow(planetVals[index].globalPos.dist(Point(0, 0)), 2)).linlin(7.3453324582332e-07, 0.00004, -90, 6)
+				// );
 				synth.set(
-					\carFreq, speedTowardsSun.linlin(-500, 409.9, 274, 274 * 2),
+					\carFreq, synthFreqs[index] * speedTowardsSun.linlin(-500, 409.9, 1, 2),
 					// \q, 
 					\gain, ~midiToGain.value(sliderVals[0], -45) +
-					(1 / pow(planetVals[index].globalPos.dist(Point(0, 0)), 2)).linlin(7.3453324582332e-07, 0.00029690310797345, -30, 0)
+					(1 / pow(planetVals[index].globalPos.dist(Point(0, 0)), 2)).linlin(7.3453324582332e-07, 0.00004, -90, 6)
 				);
 			});
-					
+			
 			// end update synths
 		};
 

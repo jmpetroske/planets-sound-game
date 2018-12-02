@@ -7,3 +7,7 @@
 		{returnVal = midiVal.linlin(0, 127, lowerVal, upperVal);});
 	returnVal;
 };
+
+~combDelayFunc = { arg freq;
+    (2*freq).reciprocal;
+};

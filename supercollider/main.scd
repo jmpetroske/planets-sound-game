@@ -49,7 +49,7 @@ MIDIIn.connectAll;
 	0.2.wait;
 	~synthControllers.add(Routine.new(~fireRoutineFunc.value([], [17])));
 	0.2.wait;
-	~synthControllers.add(Routine.new(~asteroidRoutineFunc.value([7,8,9,10], [18])));
+	~synthControllers.add(Routine.new(~asteroidRoutineFunc.value([7, 8, 9, 10], [18])));
 
 	updateTask = Task.new({
 		loop({
