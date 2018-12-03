@@ -237,3 +237,32 @@
 	// ~instance.free;
 	
 
+// (
+// a.free;
+~ambln_synth = SynthDef.new('ambln_synth', {
+	arg outbus = 0, gain, carFreq = 440.0, noiFreq = 440.0, modIndexGain = 0.0, dur = 0.2;
+
+    var noise, carOsc;
+	
+    var amp;
+    var modIndex;
+    var normFac;
+
+	var ampEnv = EnvGen.kr(Env.linen(0.02, dur, 0.02), doneAction: Done.freeSelf);
+
+    amp = gain.dbamp;
+    modIndex = modIndexGain.dbamp;
+    normFac = (1 + (2*modIndex)).reciprocal; // amplitude normalization factor
+
+    noise = LFNoise1.ar(noiFreq, amp * (2*modIndex));
+    carOsc = SinOsc.ar(carFreq, 0, amp + noise);
+	carOsc = normFac * carOsc;
+	// carOsc = LPF.ar(carOsc, 400);
+    // carOsc = LPF.ar(carOsc, 300);
+
+	carOsc = carOsc * ampEnv;
+
+    Out.ar(outbus, carOsc)
+}).add;
+// a = Synth('ambln_synth', [\gain, 0, \carFreq, 137 / 2, \noiFreq, 5000, \modIndexGain, -12.0]);
+// a = Synth('ambln_synth', [\gain, -3, \carFreq, 137 * 3, \noiFreq, 50, \modIndexGain, -6.0, \dur, 0.02]);

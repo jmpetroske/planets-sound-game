@@ -40,17 +40,19 @@ MIDIIn.connectAll;
 	}, '/planet/update', oscListenAddress, oscListenPort);
 
 	~synthControllers.add(Routine.new(~fm1RoutineFunc.value(1, 12, 1, 2)));
-	0.2.wait;
-	~synthControllers.add(Routine.new(~fm1RoutineFunc.value(2, 13, 2, 3)));
-	0.2.wait;	
-	~synthControllers.add(Routine.new(~additiveRoutineFunc.value([], [14, 15])));
-	0.2.wait;	
-	~synthControllers.add(Routine.new(~rhythmicNoiseRoutineFunc.value([3, 4], [16])));
-	0.2.wait;
-	~synthControllers.add(Routine.new(~fireRoutineFunc.value([], [17])));
-	0.2.wait;
-	~synthControllers.add(Routine.new(~asteroidRoutineFunc.value([7, 8, 9, 10], [18])));
+	~synthControllers.add(Routine.new(~fm1RoutineFunc.value(2, 12, 2, 3)));
+	~synthControllers.add(Routine.new(~additiveRoutineFunc.value([], [13, 14])));
+	~synthControllers.add(Routine.new(~rhythmicNoiseRoutineFunc.value([3, 4], [15])));
+	~synthControllers.add(Routine.new(~fireRoutineFunc.value([], [16])));
+	~synthControllers.add(Routine.new(~asteroidRoutineFunc.value([7, 8, 9, 10], [17])));
+	~synthControllers.add(Routine.new(~landingRoutineFunc.value([6], [18])));
+	~synthControllers.add(Routine.new(~beepRoutineFunc.value([11, 12], [19])));
 
+	~synthControllers.do({arg item, index;
+		item.next(True);
+	});
+	0.3.wait;
+	
 	updateTask = Task.new({
 		loop({
 			~synthControllers.do({arg item, index;

@@ -274,6 +274,7 @@
 				loop: 1) * gain.dbamp
 			);
 		}.play;
+		0.1.wait;
 
 		// end init synths
 
@@ -329,8 +330,8 @@
 				\carFreq, synthFreqs[index];
 				\gain, -inf
 			]);
-			synths[index].postln;
 		});
+		0.1.wait;
 
 		// end init synths
 
@@ -406,6 +407,128 @@
 		synths.do({arg synth, index;
 			synth.free;
 		});
+		// end cleanup
+	};
+};
+
+~landingRoutineFunc = {arg planetUIDs, gainSliderIndices;
+	{arg initData;
+		var updateFunc;
+
+		var synth;
+
+		// updatable data
+		var planetVals;
+		var sliderVals;
+
+		// init Synths here
+		// arg outbus = 0, buffer = ~landingBuf, gain = 0, grainRate = 5, grainDur = 2, playRate = 1, posStart = 7, posEnd = 15, posRand = 30, rateRand = 0.1, minFreq = 137, combFreq = 137, combGain = -8;
+		synth = Synth("launch_granulator_synth", [
+			\buffer, ~landingBuf,
+			\gain, -inf,
+			\combGain, -8,
+			\combFreq, 137
+		]);
+		// end init synths
+
+		updateFunc = {
+			// update synths here
+			synth.set(
+				\gain, ~midiToGain.value(sliderVals[0], -45),
+				\combFreq, planetVals[0].globalPos.y.abs.linlin(0, 600, 137, 137 * 2)
+			);
+			// end update synths
+		};
+
+		initData = "Started synth controller".yield;
+		"started synth controller".postln;
+		while({initData.isNil.not}, {
+			sliderVals = Array.newClear(gainSliderIndices.size);
+			gainSliderIndices.do({arg item, index;
+				sliderVals[index] = ~sliderData[item] ? 0;
+			});
+
+			planetVals = Array.newClear(planetUIDs.size);
+			planetUIDs.do({arg item, index;
+				planetVals[index] = ~planetData[item] ? PlanetPosition.zero.value;
+			});
+
+			updateFunc.value();
+			initData = "Updated synth controller".yield;
+		});
+
+		"Stopping synth controller".postln;
+		// cleanup here
+		synth.free;
+		// end cleanup
+	};
+};
+
+~beepRoutineFunc = {arg planetUIDs, gainSliderIndices;
+	{arg initData;
+		var updateFunc;
+
+		var noteGenTask;
+		var ampController;
+		var ampBus;
+
+		// updatable data
+		var planetVals;
+		var sliderVals;
+
+		var waitScalar = 1;
+		var length = 0.1;
+
+		// init Synths here
+		ampBus = Bus.audio(s, 1);
+		ampController = {arg gain = -inf;
+			Out.ar(0, FreeVerb.ar(In.ar(ampBus) * gain.dbamp, 0.5, 0.5, 0.3));
+		}.play;
+
+		0.1.wait;
+		
+		noteGenTask = Task.new({
+			var freqs = Prand([137 * 3, Pseq([137 * 3 * 3/2, 137 * 4]), 137 * 3, 137 * 3, 137 * 3], inf).asStream;
+			loop({
+				Synth("ambln_synth", [\outbus, ampBus, \gain, -6, \carFreq, freqs.next, \noiFreq, 50, \modIndexGain, -6.0, \dur, length]);
+				(1.rrand(1.2) * waitScalar).wait;
+			});
+		});
+		noteGenTask.play;
+		// end init synths
+
+		updateFunc = {
+			// update synths here
+			var planetDistance = planetVals[0].relativePos.dist(Point(0, 0));
+			waitScalar = planetDistance.linlin(200, 500, 0.1, 1);
+			ampController.set(
+				\gain, ~midiToGain.value(sliderVals[0], -45),
+			);
+			// end update synths
+		};
+
+		initData = "Started synth controller".yield;
+		"started synth controller".postln;
+		while({initData.isNil.not}, {
+			sliderVals = Array.newClear(gainSliderIndices.size);
+			gainSliderIndices.do({arg item, index;
+				sliderVals[index] = ~sliderData[item] ? 0;
+			});
+
+			planetVals = Array.newClear(planetUIDs.size);
+			planetUIDs.do({arg item, index;
+				planetVals[index] = ~planetData[item] ? PlanetPosition.zero.value;
+			});
+
+			updateFunc.value();
+			initData = "Updated synth controller".yield;
+		});
+
+		"Stopping synth controller".postln;
+		// cleanup here
+		noteGenTask.stop;
+		ampBus.free;
+		ampController.free;
 		// end cleanup
 	};
 };
