@@ -47,7 +47,7 @@
 		// initialization here
 		var synth, panner;
 		var panBus;
-		
+
 		var updateFunc;
 
 		// updatable data
@@ -55,7 +55,7 @@
 		var mainPlanet = PlanetPosition.zero.value;
 
 		panBus = Bus.audio(s, 1);
-		
+
 		// arg inbus, outbus = 0, pos = 0;
 		panner = Synth("panner", [\inbus, panBus, \pos, 0]);
 		// arg outbus = 0, freq = 220, cratio = 1, mratio = 1, modulationindex = 1, gain = -12
@@ -127,7 +127,7 @@
 				Synth("ags_noise_synth",
 					[
 						\outbus, 0,
-						\freq, 137/2, 
+						\freq, 137/2,
 						\formFreq, partialNum * (137/2),
 						\q, 25,
 						\gain, -inf;
@@ -138,7 +138,6 @@
 		updateFunc = {
 			var richness = sliderVals[0].linlin(0, 127, 1.5, 7);
 			var masterGain = ~midiToGain.value(sliderVals[1], -35);
-			
 			synths.keysValuesDo({arg partialNum, partialSynths;
 				var partialMaxAmp = partialData[partialNum];
 				var partialGain = (partialMaxAmp.ampdb - ((partialNum - richness) * dbPerPartial)).min(partialMaxAmp.ampdb);
@@ -183,7 +182,7 @@
 
 		var noise;
 		var reverb;
-		
+
 		// arg outbus = 0, buffer, gain = -12, q = 1, position = 0, wavRatio = 1.0, refFreq = 137;
 		reverb = {
 			Out.ar(0, FreeVerb.ar(InBus.ar(reverbBus), 0.5, 0.7));
@@ -200,10 +199,10 @@
 				\refFreq, 137
 			]
 		);
-		
-		
+
+
 		// end init synths
-		
+
 		updateFunc = {
 			// update synths here
 			var planet = planetVals[0];
@@ -217,16 +216,16 @@
 
 			// 38 -> 300
 			var position = distance.linlin(38, 60, 0, 1);
-			
+
 			// a: (random: 0.2, 0) o: (random: 0.08, 1)
 			noise.set(\gain, -15 + masterGain + moon.relativePos.y.linlin(-30, 5, -15, 0));
 			noise.set(\position, position);
-			noise.set(\randomness, position.linlin(0, 1, 0.2, 0.08));			
+			noise.set(\randomness, position.linlin(0, 1, 0.2, 0.08));
 			// noise.set(\position, position);
 			// noise.set(\randomness, position.linlin(0, 1, 0.2, 0.08));
 
-			// noise.set(\position, 
-			
+			// noise.set(\position,
+
 			// end update synths
 		};
 
@@ -323,7 +322,7 @@
 
 		// init Synths here
 		var synths = Array.newClear(planetUIDs.size);
-		var synthFreqs = Array.newClear(planetUIDs.size);		
+		var synthFreqs = Array.newClear(planetUIDs.size);
 		planetUIDs.do({arg item, index;
 			synthFreqs[index] = 137 * 1.7.rrand(2.4);
 			synths[index] = Synth("bln_synth", [
@@ -344,7 +343,7 @@
 					planetVals[index].relativePos.x);
 				normalizedDirection = normalizedDirection / normalizedDirection.dist(Point.new(0, 0));
 				speedTowardsSun = 1 * (
-					(planetVals[index].relativeVel.x * normalizedDirection.x) + 
+					(planetVals[index].relativeVel.x * normalizedDirection.x) +
 					(planetVals[index].relativeVel.y * normalizedDirection.y));
 
 				// For asteroid:
@@ -370,18 +369,18 @@
 				// \gain, ~midiToGain.value(sliderVals[0], -45) + (1 / pow(planetVals[index].globalPos.dist(Point(0, 0)), 2)).linlin(7.3453324582332e-07, 0.00029690310797345, -30, 0)
 				// synth.set(
 				// 	\carFreq, speedTowardsSun.linlin(-500, 409.9, 274, 274 * 2),
-				// 	// \q, 
+				// 	// \q,
 				// 	\gain, ~midiToGain.value(sliderVals[0], -45) +
 				// 	(1 / pow(planetVals[index].globalPos.dist(Point(0, 0)), 2)).linlin(7.3453324582332e-07, 0.00004, -90, 6)
 				// );
 				synth.set(
 					\carFreq, synthFreqs[index] * speedTowardsSun.linlin(-500, 409.9, 1, 2),
-					// \q, 
+					// \q,
 					\gain, ~midiToGain.value(sliderVals[0], -45) +
 					(1 / pow(planetVals[index].globalPos.dist(Point(0, 0)), 2)).linlin(7.3453324582332e-07, 0.00004, -90, 6)
 				);
 			});
-			
+
 			// end update synths
 		};
 
@@ -486,7 +485,7 @@
 		}.play;
 
 		0.1.wait;
-		
+
 		noteGenTask = Task.new({
 			var freqs = Prand([137 * 3, Pseq([137 * 3 * 3/2, 137 * 4]), 137 * 3, 137 * 3, 137 * 3], inf).asStream;
 			loop({

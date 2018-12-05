@@ -10,7 +10,7 @@ MIDIIn.connectAll;
 	var planetUpdateOSCListener;
 	var oscListenAddress = NetAddr("127.0.0.1", nil);
 	var oscListenPort = 57123;
-	
+
 	var midiListener;
 
 	var updateTask;
@@ -26,7 +26,7 @@ MIDIIn.connectAll;
 	midiListener = MIDIFunc.new({arg val, ctrlNum, chan, src;
 		~sliderData[ctrlNum] = val;
 	}, msgType: 'control');
-	
+
 	planetUpdateOSCListener = OSCFunc({arg msg, time;
 		var path, uid, data, planetPosition;
 		#path, uid ... data = msg;
@@ -35,7 +35,7 @@ MIDIIn.connectAll;
 			Point.new(data[0], data[1]),
 			Point.new(data[2], data[3]),
 			Point.new(data[4], data[5]));
-		
+
 		~planetData[uid] = planetPosition;
 	}, '/planet/update', oscListenAddress, oscListenPort);
 
@@ -46,13 +46,13 @@ MIDIIn.connectAll;
 	~synthControllers.add(Routine.new(~fireRoutineFunc.value([], [16])));
 	~synthControllers.add(Routine.new(~asteroidRoutineFunc.value([7, 8, 9, 10], [17])));
 	~synthControllers.add(Routine.new(~landingRoutineFunc.value([6], [18])));
-	~synthControllers.add(Routine.new(~beepRoutineFunc.value([11, 12], [19])));
+	~synthControllers.add(Routine.new(~beepRoutineFunc.value([11], [19])));
 
 	~synthControllers.do({arg item, index;
 		item.next(True);
 	});
 	0.3.wait;
-	
+
 	updateTask = Task.new({
 		loop({
 			~synthControllers.do({arg item, index;
@@ -63,9 +63,10 @@ MIDIIn.connectAll;
 	}).play;
 
 	"waiting for exit".yield;
-	
+
+	midiListener.free;
 	planetUpdateOSCListener.free;
-	
+
 	"exiting routine".postln;
 	updateTask.stop;
 	~synthControllers.do({arg item, index;
