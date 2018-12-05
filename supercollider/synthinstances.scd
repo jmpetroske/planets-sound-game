@@ -45,8 +45,7 @@
 ~fm1RoutineFunc = {arg planetUID, gainSliderIndex, cratio = 2, mratio = 3;
 	{arg initData;
 		// initialization here
-		var synth, panner;
-		var panBus;
+		var synth;
 
 		var updateFunc;
 
@@ -54,17 +53,14 @@
 		var sliderGain = -inf;
 		var mainPlanet = PlanetPosition.zero.value;
 
-		panBus = Bus.audio(s, 1);
 
 		// arg inbus, outbus = 0, pos = 0;
-		panner = Synth("panner", [\inbus, panBus, \pos, 0]);
 		// arg outbus = 0, freq = 220, cratio = 1, mratio = 1, modulationindex = 1, gain = -12
-		synth = Synth("fm_synth", [\outbus, panBus, \freq, 137, \cratio, cratio, \mratio, mratio, \gain, -inf]);
+		synth = Synth("fm_synth", [\outbus, 0, \freq, 137, \cratio, cratio, \mratio, mratio, \gain, -inf]);
 
 		updateFunc = {
 			synth.set(\modulationindex, mainPlanet.globalPos.y.linlin(0, 300, 0, 5));
 			synth.set(\gain, sliderGain + mainPlanet.globalPos.y.linlin(-200, 200, -50, -24, \min));
-			panner.set(\pos, mainPlanet.globalPos.x.linlin(-400, 400, -0.8, 0.8));
 		};
 
 		updateFunc.value;
@@ -81,8 +77,6 @@
 
 		// cleanup here
 		"Stopping synth controller".postln;
-		panBus.free;
-		panner.free;
 		synth.free;
 	};
 };
@@ -256,8 +250,8 @@
 
 		// init Synths here
 		// arg outbus = 0, buffer, gain = -12, grainRate, grainDur, playRate = 1, posRand = 30, rateRand = 0.1;
-		synth = {arg gain = -inf;
-			Out.ar(0, PlayBuf.ar(
+		synth = {arg outbus = 0, gain = -inf;
+			Out.ar(outbus, PlayBuf.ar(
 				numChannels: 1,
 				bufnum: ~fireBuf,
 				loop: 1) * gain.dbamp
