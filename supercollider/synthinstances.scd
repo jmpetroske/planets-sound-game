@@ -178,19 +178,12 @@
 		var sliderVals;
 
 		// init Synths here
-		var reverbBus = Bus.audio(s, 1);
-
 		var noise;
-		var reverb;
 
 		// arg outbus = 0, buffer, gain = -12, q = 1, position = 0, wavRatio = 1.0, refFreq = 137;
-		reverb = {
-			Out.ar(0, FreeVerb.ar(InBus.ar(reverbBus), 0.5, 0.7));
-		}.play;
-
 		noise = Synth("ags_buf_noise_synth",
 			[
-				\outbus, reverbBus,
+				\outbus, 0,
 				\buffer, ~ahhooBuf,
 				\gain, -inf,
 				\q, 3,
@@ -199,7 +192,6 @@
 				\refFreq, 137
 			]
 		);
-
 
 		// end init synths
 
@@ -249,8 +241,6 @@
 		"Stopping synth controller".postln;
 		// cleanup here
 		noise.free;
-		reverb.free;
-		reverbBus.free;
 	};
 };
 

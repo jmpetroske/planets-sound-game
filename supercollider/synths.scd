@@ -128,7 +128,7 @@
 
 	granSig = HPF.ar(granSig, 500);
 
-    Out.ar(outbus, granSig * gain.dbamp);
+    Out.ar(outbus, FreeVerb.ar(granSig * gain.dbamp, 0.5, 0.7));
 }).add;
 
 ~fireSynth = SynthDef.new('buf_granulator', {
