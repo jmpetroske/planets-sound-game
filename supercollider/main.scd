@@ -23,8 +23,12 @@ MIDIIn.connectAll;
 	~sliderData = Dictionary.new(); // slidernum -> value (0-127)
 	~synthControllers = List.new();
 
+	// midiListener = MIDIFunc.new({arg val, ctrlNum, chan, src;
+	// 	~sliderData[ctrlNum] = val;
+	// }, msgType: 'control');
+
 	midiListener = MIDIFunc.new({arg val, ctrlNum, chan, src;
-		~sliderData[ctrlNum] = val;
+		~sliderData[ctrlNum + 12] = val;
 	}, msgType: 'control');
 
 	planetUpdateOSCListener = OSCFunc({arg msg, time;
