@@ -232,10 +232,6 @@
 			noise.set(\gain, -15 + masterGain + moon.relativePos.y.linlin(-30, 5, -15, 0));
 			noise.set(\position, position);
 			noise.set(\randomness, position.linlin(0, 1, 0.2, 0.08));
-			// noise.set(\position, position);
-			// noise.set(\randomness, position.linlin(0, 1, 0.2, 0.08));
-
-			// noise.set(\position,
 
 			// end update synths
 		};
