@@ -378,8 +378,22 @@
 		var synthFreqs = Array.newClear(planetUIDs.size);
 		planetUIDs.do({arg item, index;
 			spatBusses[index] = Bus.audio(s, 1);
+			spatializers[index] = Synth("spatializer",
+				[
+					\inbus, spatBusses[index],
+					\outbus, 0,
+					\masterX, 0,
+					\masterY, 0,
+					\masterZ, 0,
+					\width, 0.8,
+					\maxMeters, 1500,
+					\reverbGain, -18,
+				]
+			);
+
 			synthFreqs[index] = 137 * 1.7.rrand(2.4);
 			synths[index] = Synth("bln_synth", [
+				\outbus, spatBusses[index];
 				\carFreq, synthFreqs[index];
 				\gain, -inf
 			]);
@@ -427,6 +441,12 @@
 				// 	\gain, ~midiToGain.value(sliderVals[0], -45) +
 				// 	(1 / pow(planetVals[index].globalPos.dist(Point(0, 0)), 2)).linlin(7.3453324582332e-07, 0.00004, -90, 6)
 				// );
+				spatializers[index].set(
+					\masterX, 1 *  planetVals[index].relativePos.y,
+					\masterY, -1 * planetVals[index].relativePos.x,
+					\masterZ, 0
+				);
+
 				synth.set(
 					\carFreq, synthFreqs[index] * speedTowardsSun.linlin(-500, 409.9, 1, 2),
 					// \q,
