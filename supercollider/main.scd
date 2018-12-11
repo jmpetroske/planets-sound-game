@@ -1,3 +1,7 @@
+o = ServerOptions.new;
+o.memSize = 8192 * 2;
+// s = Server.local.boot;
+Server.local.options_(o);
 s = Server.local.boot;
 MIDIIn.connectAll;
 ~clipsLocation = "clips";
@@ -80,5 +84,7 @@ Stethoscope.new(s, 2);
 	});
 });
 )
+s.makeGui
+s.plotTree
 ~main_routine.play;
 ~main_routine.next;

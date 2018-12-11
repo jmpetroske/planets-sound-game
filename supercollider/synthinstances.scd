@@ -500,8 +500,21 @@
 
 		// init Synths here
 		spatBus = Bus.audio(s, 1);
+		spatializer = Synth("spatializer",
+			[
+				\inbus, spatBus,
+				\outbus, 0,
+				\masterX, 0,
+				\masterY, 0,
+				\masterZ, 0,
+				\width, 0.4,
+				\maxMeters, 1500,
+				\reverbGain, -120,
+			]
+		);
 		// arg outbus = 0, buffer = ~landingBuf, gain = 0, grainRate = 5, grainDur = 2, playRate = 1, posStart = 7, posEnd = 15, posRand = 30, rateRand = 0.1, minFreq = 137, combFreq = 137, combGain = -8;
 		synth = Synth("launch_granulator_synth", [
+			\outbus, spatBus,
 			\buffer, ~landingBuf,
 			\gain, -inf,
 			\combGain, -8,
@@ -511,6 +524,12 @@
 
 		updateFunc = {
 			// update synths here
+			spatializer.set(
+				\masterX, 1 * planetVals[0].globalPos.y,
+				\masterY, -1 * planetVals[0].globalPos.x,
+				\masterZ, 0
+			);
+
 			synth.set(
 				\gain, ~midiToGain.value(sliderVals[0], -45),
 				\combFreq, planetVals[0].globalPos.y.abs.linlin(0, 600, 137, 137 * 2)
