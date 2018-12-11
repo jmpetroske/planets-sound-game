@@ -84,7 +84,5 @@ Stethoscope.new(s, 2);
 	});
 });
 )
-s.makeGui
-s.plotTree
 ~main_routine.play;
 ~main_routine.next;

@@ -582,9 +582,21 @@
 
 		// init Synths here
 		spatBus = Bus.audio(s, 1);
+		spatializer = Synth("spatializer",
+			[
+				\inbus, spatBus,
+				\outbus, 0,
+				\masterX, 0,
+				\masterY, 0,
+				\masterZ, 0,
+				\width, 0.1,
+				\maxMeters, 1500,
+				\reverbGain, -24,
+			]
+		);
 		ampBus = Bus.audio(s, 1);
 		ampController = {arg gain = -inf;
-			Out.ar(0, FreeVerb.ar(In.ar(ampBus) * gain.dbamp, 0.5, 0.5, 0.3));
+			Out.ar(spatBus, FreeVerb.ar(In.ar(ampBus) * gain.dbamp, 0.2, 0.5, 0.3));
 		}.play;
 
 		0.1.wait;
@@ -605,6 +617,12 @@
 			waitScalar = planetDistance.linlin(200, 500, 0.1, 1);
 			ampController.set(
 				\gain, ~midiToGain.value(sliderVals[0], -45),
+			);
+
+			spatializer.set(
+				\masterX, 1 *  planetVals[0].relativePos.y,
+				\masterY, -1 * planetVals[0].relativePos.x,
+				\masterZ, 0
 			);
 			// end update synths
 		};
