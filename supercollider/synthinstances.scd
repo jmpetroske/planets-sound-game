@@ -89,8 +89,10 @@
 				\masterZ, 0
 			);
 
-			synth.set(\modulationindex, mainPlanet.globalPos.y.linlin(0, 300, 0, 5));
-			synth.set(\gain, sliderGain + mainPlanet.globalPos.y.linlin(-200, 200, -50, -24, \min));
+			synth.set(
+				\modulationindex, mainPlanet.globalPos.y.linlin(0, 300, 0, 5),
+				\gain, sliderGain + mainPlanet.globalPos.y.linlin(-200, 200, -50, -24, \min)
+			);
 		};
 
 		updateFunc.value;
@@ -140,6 +142,13 @@
 
 		// synth init
 		spatBus = Bus.audio(s, 1);
+		spatializer = Synth("ambientSpatializer",
+			[
+				\inbus, spatBus,
+				\outbus, 0,
+				\reverbGain, -20,
+			]
+		);
 
 		partialData.keysValuesDo({arg key, value;
 			var partialNum = key;
@@ -148,7 +157,7 @@
 			synths.add(partialNum -> [
 				Synth("simple_am_synth",
 					[
-						\outbus, 0,
+						\outbus, spatBus,
 						\cFreq, partialNum * (137/2),
 						\mFreq, 137/2,
 						\mIndexGain, -6,
@@ -157,7 +166,7 @@
 				// arg outbus = 0, freq = 440.0, formFreq = 1760.0, q = 1.0, gain = -12;
 				Synth("ags_noise_synth",
 					[
-						\outbus, 0,
+						\outbus, spatBus,
 						\freq, 137/2,
 						\formFreq, partialNum * (137/2),
 						\q, 25,
@@ -268,9 +277,11 @@
 			);
 
 			// a: (random: 0.2, 0) o: (random: 0.08, 1)
-			noise.set(\gain, -15 + masterGain + moon.relativePos.y.linlin(-30, 5, -15, 0));
-			noise.set(\position, position);
-			noise.set(\randomness, position.linlin(0, 1, 0.2, 0.08));
+			noise.set(
+				\gain, -15 + masterGain + moon.relativePos.y.linlin(-30, 5, -15, 0),
+				\position, position,
+				\randomness, position.linlin(0, 1, 0.2, 0.08)
+			);
 
 			// end update synths
 		};
@@ -315,9 +326,16 @@
 		// init Synths here
 
 		spatBus = Bus.audio(s, 1);
+		spatializer = Synth("ambientSpatializer",
+			[
+				\inbus, spatBus,
+				\outbus, 0,
+				\reverbGain, -20,
+			]
+		);
 		// arg outbus = 0, buffer, gain = -12, grainRate, grainDur, playRate = 1, posRand = 30, rateRand = 0.1;
-		synth = {arg outbus = 0, gain = -inf;
-			Out.ar(outbus, PlayBuf.ar(
+		synth = {arg gain = -inf;
+			Out.ar(spatBus, PlayBuf.ar(
 				numChannels: 1,
 				bufnum: ~fireBuf,
 				loop: 1) * gain.dbamp
@@ -353,6 +371,7 @@
 		"Stopping synth controller".postln;
 		// cleanup here
 		spatBus = Bus.audio(s, 1);
+		spatializer.free;
 		synth.free;
 		// end cleanup
 	};

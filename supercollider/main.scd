@@ -1,8 +1,9 @@
 o = ServerOptions.new;
-o.memSize = 8192 * 2;
+o.memSize = 8192 * 4;
 // s = Server.local.boot;
 Server.local.options_(o);
 s = Server.local.boot;
+Server.killAll;
 MIDIIn.connectAll;
 ~clipsLocation = "clips";
 "buffLoader.scd".loadRelative;
@@ -67,7 +68,7 @@ Stethoscope.new(s, 2);
 			~synthControllers.do({arg item, index;
 				item.next(True);
 			});
-			(1/60).wait;
+			(1.0 / 15.0).wait;
 		});
 	}).play;
 

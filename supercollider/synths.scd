@@ -1,5 +1,5 @@
-~spatializer = CtkSynthDef('spatializer', {
-    arg inbus, masterX, masterY, masterZ, outbus, width, gain = -12, maxMeters = 1000, reverbGain = -18;
+~spatializer = SynthDef('spatializer', {
+    arg inbus, masterX, masterY, masterZ, outbus, width, gain = 0, maxMeters = 1000, reverbGain = -18;
     var cartesian, src, amplitude, freq, radialDistance, amp;
     var phi, theta,  chain, hiFreqAttenCoeff, minAttenDist, lpfDB, speedOfSound;
     var reverb;
@@ -61,7 +61,24 @@
 
     // send out signal
 	Out.ar(outbus, FoaDecode.ar(chain + reverb, ~decoder));
-});
+	// Out.ar(outbus, chain + reverb);
+}).add;
+
+~ambientSpatializer = SynthDef('ambientSpatializer', {
+    arg inbus = 0, outbus = 0, gain = 0, reverbGain = -12;
+    var src, chain, reverb;
+
+	src = FoaEncode.ar(In.ar(inbus, 1), ~ambientEncoder);
+
+    reverb = FoaReverb.ar(src * reverbGain.dbamp, predelay: 0.0, t60low: 0.6, t60high: 0.2, diffusion: 0.5, mod: 0.2);
+
+	chain = src;
+    // chain = FoaTumble.ar(chain, phi);
+    // chain = FoaRotate.ar(chain, theta);
+
+	Out.ar(outbus, FoaDecode.ar(chain + reverb, ~decoder));
+	//Out.ar(outbus, chain + reverb);
+}).add;
 
 ~fm_synth = SynthDef('fm_synth', {
 	arg outbus = 0, freq = 20, cratio = 1, mratio = 1, modulationindex = 1, gain = -12;
