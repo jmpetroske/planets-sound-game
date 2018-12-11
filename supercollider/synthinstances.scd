@@ -165,6 +165,8 @@
 	{arg initData;
 		var updateFunc;
 
+		var spatBus;
+		var spatializer;
 		var synths = Dictionary.new();
 
 		// updatable data
@@ -175,9 +177,26 @@
 		var noise;
 
 		// arg outbus = 0, buffer, gain = -12, q = 1, position = 0, wavRatio = 1.0, refFreq = 137;
+
+		spatBus = Bus.audio(s, 1);
+
+		// arg inbus, masterX, masterY, masterZ, outbus, width, gain = -12, maxMeters = 1000, reverbGain = -18;
+		spatializer = Synth("spatializer",
+			[
+				\inbus, spatBus,
+				\outbus, 0,
+				\masterX, 0,
+				\masterY, 0,
+				\masterZ, 0,
+				\width, 0.1,
+				\maxMeters, 1500,
+				\reverbGain, -60,
+			]
+		);
+
 		noise = Synth("ags_buf_noise_synth",
 			[
-				\outbus, 0,
+				\outbus, spatBus,
 				\buffer, ~ahhooBuf,
 				\gain, -inf,
 				\q, 3,
@@ -202,6 +221,12 @@
 
 			// 38 -> 300
 			var position = distance.linlin(38, 60, 0, 1);
+
+			spatializer.set(
+				\masterX, planet.relativePos.y,
+				\masterY, -1 * planet.relativePos.x,
+				\masterZ, 0
+			);
 
 			// a: (random: 0.2, 0) o: (random: 0.08, 1)
 			noise.set(\gain, -15 + masterGain + moon.relativePos.y.linlin(-30, 5, -15, 0));
@@ -234,6 +259,8 @@
 
 		"Stopping synth controller".postln;
 		// cleanup here
+		spatBus.free;
+		spatializer.free;
 		noise.free;
 	};
 };

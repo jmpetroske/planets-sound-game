@@ -5,6 +5,6 @@
 ~launchBuf = Buffer.readChannel(s, (~clipsLocation +/+ "launch.wav").resolveRelative, channels: [0]);
 // ~launchBuf = Buffer.read(s, (~clipsLocation ++ "/launch.wav").resolveRelative);
 
-~encoder = FoaEncoderKernel.newDiffuse;
+~encoder = FoaEncoderMatrix.newOmni;
 ~decoder = FoaDecoderKernel.newSpherical;
 	
