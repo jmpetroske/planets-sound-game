@@ -188,9 +188,9 @@
 				\masterX, 0,
 				\masterY, 0,
 				\masterZ, 0,
-				\width, 0.1,
+				\width, 0.4,
 				\maxMeters, 1500,
-				\reverbGain, -60,
+				\reverbGain, -120,
 			]
 		);
 
@@ -223,7 +223,7 @@
 			var position = distance.linlin(38, 60, 0, 1);
 
 			spatializer.set(
-				\masterX, planet.relativePos.y,
+				\masterX, 1 * planet.relativePos.y,
 				\masterY, -1 * planet.relativePos.x,
 				\masterZ, 0
 			);

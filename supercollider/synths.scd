@@ -21,13 +21,13 @@
     amp = gain.dbamp;
 
     // B Format input
-	src = FoaEncode.ar(In.ar(inbus, 4), ~encoder);
+	src = FoaEncode.ar(In.ar(inbus, 1), ~encoder);
 
     // calculate theta, phi and rho
     cartesian = Cartesian(masterX, masterY, masterZ);
     theta = cartesian.theta;
     phi = cartesian.phi;
-    radialDistance = cartesian.rho;
+    radialDistance = cartesian.rho / 1000;
 
     // calculate the attenuation of high frequencies based on radial distance
     // dB/m = freq/100000
@@ -39,7 +39,8 @@
     amplitude = amp / radialDistance.clip(1, maxMeters);
 
     // lowpass the src and apply envelope and amplitude
-    chain = LPF.ar(src, freq);
+	// chain = LPF.ar(src, freq);
+	chain = src;
 
     // use a delay line based on the distance to simulate a doppler shift
     //chain = DelayC.ar(chain, maxMeters/speedOfSound, radialDistance/speedOfSound);
@@ -48,7 +49,7 @@
     reverb = FoaReverb.ar(chain * reverbGain.dbamp, predelay: 0.0, t60low: 0.6, t60high: 0.2, diffusion: 0.5, mod: 0.2);
 
     // zoom in on the center of the sound-field based on the arctangent of the distance and a user-defined width
-	// chain = FoaZoom.ar(chain * amplitude, radialDistance.atan2(width));
+	chain = FoaZoom.ar(chain * amplitude, radialDistance.atan2(width));
 
     // use proximity filters based on the distance
     // note: proximity boots low frequencies so we need to condition our signal by using a highpass
