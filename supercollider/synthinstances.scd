@@ -45,6 +45,8 @@
 ~fm1RoutineFunc = {arg planetUID, gainSliderIndex, cratio = 2, mratio = 3;
 	{arg initData;
 		// initialization here
+		var spatBus;
+		var spatializer;
 		var synth;
 
 		var updateFunc;
@@ -53,12 +55,40 @@
 		var sliderGain = -inf;
 		var mainPlanet = PlanetPosition.zero.value;
 
+		spatBus = Bus.audio(s, 1);
+
+		spatializer = Synth("spatializer",
+			[
+				\inbus, spatBus,
+				\outbus, 0,
+				\masterX, 0,
+				\masterY, 0,
+				\masterZ, 0,
+				\width, 0.2,
+				\maxMeters, 1500,
+				\reverbGain, -12,
+			]
+		);
 
 		// arg inbus, outbus = 0, pos = 0;
 		// arg outbus = 0, freq = 220, cratio = 1, mratio = 1, modulationindex = 1, gain = -12
-		synth = Synth("fm_synth", [\outbus, 0, \freq, 137, \cratio, cratio, \mratio, mratio, \gain, -inf]);
+		synth = Synth("fm_synth",
+			[
+				\outbus, spatBus,
+				\freq, 137,
+				\cratio, cratio,
+				\mratio, mratio,
+				\gain, -inf
+			]
+		);
 
 		updateFunc = {
+			spatializer.set(
+				\masterX, 1  * mainPlanet.globalPos.y,
+				\masterY, -1 * mainPlanet.globalPos.x,
+				\masterZ, 0
+			);
+
 			synth.set(\modulationindex, mainPlanet.globalPos.y.linlin(0, 300, 0, 5));
 			synth.set(\gain, sliderGain + mainPlanet.globalPos.y.linlin(-200, 200, -50, -24, \min));
 		};
@@ -77,6 +107,7 @@
 
 		// cleanup here
 		"Stopping synth controller".postln;
+		spatializer.free;
 		synth.free;
 	};
 };
@@ -85,6 +116,8 @@
 	{arg initData;
 		var updateFunc;
 
+		var spatBus;
+		var spatializer;
 		var synths = Dictionary.new();
 		// [partialNum, partialAmp]
 		var partialData = Dictionary.newFrom(List[
@@ -103,6 +136,10 @@
 
 		// updatable data
 		var sliderVals;
+
+
+		// synth init
+		spatBus = Bus.audio(s, 1);
 
 		partialData.keysValuesDo({arg key, value;
 			var partialNum = key;
@@ -154,6 +191,8 @@
 
 		// cleanup here
 		"Stopping synth controller".postln;
+		spatBus.free;
+		spatializer.free;
 		synths.keysValuesDo({arg key, value;
 			value[0].free;
 			value[1].free;
@@ -265,6 +304,8 @@
 	{arg initData;
 		var updateFunc;
 
+		var spatBus;
+		var spatializer;
 		var synth;
 
 		// updatable data
@@ -272,6 +313,8 @@
 		var sliderVals;
 
 		// init Synths here
+
+		spatBus = Bus.audio(s, 1);
 		// arg outbus = 0, buffer, gain = -12, grainRate, grainDur, playRate = 1, posRand = 30, rateRand = 0.1;
 		synth = {arg outbus = 0, gain = -inf;
 			Out.ar(outbus, PlayBuf.ar(
@@ -309,6 +352,7 @@
 
 		"Stopping synth controller".postln;
 		// cleanup here
+		spatBus = Bus.audio(s, 1);
 		synth.free;
 		// end cleanup
 	};
@@ -328,9 +372,12 @@
 		// var ampMin = inf;
 
 		// init Synths here
+		var spatBusses = Array.newClear(planetUIDs.size);
+		var spatializers = Array.newClear(planetUIDs.size);
 		var synths = Array.newClear(planetUIDs.size);
 		var synthFreqs = Array.newClear(planetUIDs.size);
 		planetUIDs.do({arg item, index;
+			spatBusses[index] = Bus.audio(s, 1);
 			synthFreqs[index] = 137 * 1.7.rrand(2.4);
 			synths[index] = Synth("bln_synth", [
 				\carFreq, synthFreqs[index];
@@ -411,6 +458,8 @@
 		"Stopping synth controller".postln;
 		// cleanup here
 		synths.do({arg synth, index;
+			spatBusses[index].free;
+			spatializers[index].free;
 			synth.free;
 		});
 		// end cleanup
@@ -421,6 +470,8 @@
 	{arg initData;
 		var updateFunc;
 
+		var spatBus;
+		var spatializer;
 		var synth;
 
 		// updatable data
@@ -428,6 +479,7 @@
 		var sliderVals;
 
 		// init Synths here
+		spatBus = Bus.audio(s, 1);
 		// arg outbus = 0, buffer = ~landingBuf, gain = 0, grainRate = 5, grainDur = 2, playRate = 1, posStart = 7, posEnd = 15, posRand = 30, rateRand = 0.1, minFreq = 137, combFreq = 137, combGain = -8;
 		synth = Synth("launch_granulator_synth", [
 			\buffer, ~landingBuf,
@@ -465,6 +517,8 @@
 
 		"Stopping synth controller".postln;
 		// cleanup here
+		spatBus.free;
+		spatializer.free;
 		synth.free;
 		// end cleanup
 	};
@@ -474,6 +528,8 @@
 	{arg initData;
 		var updateFunc;
 
+		var spatBus;
+		var spatializer;
 		var noteGenTask;
 		var ampController;
 		var ampBus;
@@ -486,6 +542,7 @@
 		var length = 0.1;
 
 		// init Synths here
+		spatBus = Bus.audio(s, 1);
 		ampBus = Bus.audio(s, 1);
 		ampController = {arg gain = -inf;
 			Out.ar(0, FreeVerb.ar(In.ar(ampBus) * gain.dbamp, 0.5, 0.5, 0.3));
@@ -532,6 +589,8 @@
 
 		"Stopping synth controller".postln;
 		// cleanup here
+		spatBus.free;
+		spatializer.free;
 		noteGenTask.stop;
 		ampBus.free;
 		ampController.free;

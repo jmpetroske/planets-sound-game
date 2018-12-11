@@ -2,6 +2,7 @@ s = Server.local.boot;
 MIDIIn.connectAll;
 ~clipsLocation = "clips";
 "buffLoader.scd".loadRelative;
+Stethoscope.new(s, 2);
 
 (
 ~main_rountine.stop;
