@@ -77,7 +77,7 @@
     // chain = FoaRotate.ar(chain, theta);
 
 	Out.ar(outbus, FoaDecode.ar(chain + reverb, ~decoder));
-	//Out.ar(outbus, chain + reverb);
+	// Out.ar(outbus, chain + reverb);
 }).add;
 
 ~fm_synth = SynthDef('fm_synth', {

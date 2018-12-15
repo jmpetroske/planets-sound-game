@@ -75,7 +75,7 @@
 		synth = Synth("fm_synth",
 			[
 				\outbus, spatBus,
-				\freq, 137,
+				\freq, ~freq,
 				\cratio, cratio,
 				\mratio, mratio,
 				\gain, -inf
@@ -91,7 +91,8 @@
 
 			synth.set(
 				\modulationindex, mainPlanet.globalPos.y.linlin(0, 300, 0, 5),
-				\gain, sliderGain + mainPlanet.globalPos.y.linlin(-200, 200, -50, -24, \min)
+				\gain, sliderGain + mainPlanet.globalPos.y.linlin(-200, 200, -50, -24, \min),
+				\freq, ~freq
 			);
 		};
 
@@ -158,8 +159,8 @@
 				Synth("simple_am_synth",
 					[
 						\outbus, spatBus,
-						\cFreq, partialNum * (137/2),
-						\mFreq, 137/2,
+						\cFreq, partialNum * (~freq/2),
+						\mFreq, ~freq/2,
 						\mIndexGain, -6,
 						\gain, -inf;
 					]),
@@ -167,8 +168,8 @@
 				Synth("ags_noise_synth",
 					[
 						\outbus, spatBus,
-						\freq, 137/2,
-						\formFreq, partialNum * (137/2),
+						\freq, ~freq/2,
+						\formFreq, partialNum * (~freq/2),
 						\q, 25,
 						\gain, -inf;
 					])
@@ -181,8 +182,16 @@
 			synths.keysValuesDo({arg partialNum, partialSynths;
 				var partialMaxAmp = partialData[partialNum];
 				var partialGain = (partialMaxAmp.ampdb - ((partialNum - richness) * dbPerPartial)).min(partialMaxAmp.ampdb);
-				partialSynths[0].set(\gain, masterGain + partialGain + extraGain);
-				partialSynths[1].set(\gain, masterGain + partialGain + extraGain - 6);
+				partialSynths[0].set(
+					\gain, masterGain + partialGain + extraGain,
+					\cFreq, partialNum * (~freq/2),
+					\mFreq, ~freq/2
+				);
+				partialSynths[1].set(
+					\gain, masterGain + partialGain + extraGain - 6,
+					\freq, ~freq/2,
+					\formFreq, partialNum * (~freq/2)
+				);
 			});
 		};
 
@@ -249,7 +258,7 @@
 				\gain, -inf,
 				\q, 3,
 				\position, 0,
-				\wavRatio, 1,
+				\wavRatio, ~freq/137,
 				\refFreq, 137
 			]
 		);
@@ -280,7 +289,8 @@
 			noise.set(
 				\gain, -15 + masterGain + moon.relativePos.y.linlin(-30, 5, -15, 0),
 				\position, position,
-				\randomness, position.linlin(0, 1, 0.2, 0.08)
+				\randomness, position.linlin(0, 1, 0.2, 0.08),
+				\wavRatio, ~freq/137,
 			);
 
 			// end update synths
@@ -537,7 +547,7 @@
 			\buffer, ~landingBuf,
 			\gain, -inf,
 			\combGain, -8,
-			\combFreq, 137
+			\combFreq, ~freq
 		]);
 		// end init synths
 
@@ -551,7 +561,7 @@
 
 			synth.set(
 				\gain, ~midiToGain.value(sliderVals[0], -45),
-				\combFreq, planetVals[0].globalPos.y.abs.linlin(0, 600, 137, 137 * 2)
+				\combFreq, planetVals[0].globalPos.y.abs.linlin(0, 600, ~freq, ~freq * 2)
 			);
 			// end update synths
 		};
@@ -623,7 +633,13 @@
 		noteGenTask = Task.new({
 			var freqs = Prand([137 * 3, Pseq([137 * 3 * 3/2, 137 * 4]), 137 * 3, 137 * 3, 137 * 3], inf).asStream;
 			loop({
-				Synth("ambln_synth", [\outbus, ampBus, \gain, -6, \carFreq, freqs.next, \noiFreq, 50, \modIndexGain, -6.0, \dur, length]);
+				Synth("ambln_synth", [
+					\outbus, ampBus,
+					\gain, -6,
+					\carFreq, freqs.next * ~freq/137,
+					\noiFreq, 50,
+					\modIndexGain, -6.0,
+					\dur, length]);
 				(1.rrand(1.2) * waitScalar).wait;
 			});
 		});

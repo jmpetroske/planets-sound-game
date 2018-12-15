@@ -8,7 +8,6 @@ MIDIIn.connectAll;
 ~clipsLocation = "clips";
 "buffLoader.scd".loadRelative;
 Stethoscope.new(s, 2);
-
 (
 ~main_rountine.stop;
 
@@ -33,9 +32,42 @@ Stethoscope.new(s, 2);
 	// 	~sliderData[ctrlNum] = val;
 	// }, msgType: 'control');
 
-	midiListener = MIDIFunc.new({arg val, ctrlNum, chan, src;
-		~sliderData[ctrlNum + 12] = val;
-	}, msgType: 'control');
+	// 12 - 19, 28+
+	~freq = 137;
+	~sliderData[28] = 63;
+	// midiListener = MIDIFunc.new({arg val, ctrlNum, chan, src;
+		// ~sliderData[ctrlNum + 12] = val;
+		// ~freq = ~sliderData[28].linexp(0, 127, 137/2, 137*2)
+	// }, msgType: 'control');
+	thisProcess.openUDPPort(8080);
+
+	~midiListener = OSCFunc.newMatching({arg msg, time, addr, recPort;
+		~sliderData[12] = msg[1];
+	}, '/1');
+	~midiListener = OSCFunc.newMatching({arg msg, time, addr, recPort;
+		~sliderData[13] = msg[1];
+	}, '/2');
+	~midiListener = OSCFunc.newMatching({arg msg, time, addr, recPort;
+		~sliderData[14] = msg[1];
+	}, '/3');
+	~midiListener = OSCFunc.newMatching({arg msg, time, addr, recPort;
+		~sliderData[15] = msg[1];
+	}, '/4');
+	~midiListener = OSCFunc.newMatching({arg msg, time, addr, recPort;
+		~sliderData[16] = msg[1];
+	}, '/5');
+	~midiListener = OSCFunc.newMatching({arg msg, time, addr, recPort;
+		~sliderData[17] = msg[1];
+	}, '/6');
+	~midiListener = OSCFunc.newMatching({arg msg, time, addr, recPort;
+		~sliderData[18] = msg[1];
+	}, '/7');
+	~midiListener = OSCFunc.newMatching({arg msg, time, addr, recPort;
+		~sliderData[19] = msg[1];
+	}, '/8');
+	~midiListener = OSCFunc.newMatching({arg msg, time, addr, recPort;
+		~freq = msg[1].linexp(0, 127, 137/2, 137*2);
+	}, '/9');
 
 	planetUpdateOSCListener = OSCFunc({arg msg, time;
 		var path, uid, data, planetPosition;
@@ -85,5 +117,6 @@ Stethoscope.new(s, 2);
 	});
 });
 )
+s.makeGui
 ~main_routine.play;
 ~main_routine.next;

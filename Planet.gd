@@ -37,7 +37,7 @@ func _enter_tree():
 
 func _process(delta):
 	if uid != 0:
-		cur_time = cur_time + delta
+		cur_time = cur_time + (delta * 1)
 		#print(str(kep_to_cart(semi_major_axis, eccentricity, arg_of_pariapse, orbit_time)))
 		var orbit_cart_data = OrbitalMath.kep_to_cart(orbit_data, cur_time)
 		position = orbit_cart_data[0]

@@ -72,7 +72,7 @@ func kep_to_cart(data, cur_time):
 	#var MA = EA - e*sin(EA)
 	
 	var EA = MA
-	for x in range(100):
+	for x in range(30):
 		EA = MA + e * sin(EA)
 	
 	#3
